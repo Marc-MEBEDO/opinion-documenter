@@ -243,7 +243,7 @@ let options = {
  };
 
  const pdfCreate = ( opinion, opinionDetails ) => {
-    pdf.create( htmlText , options ).toFile('test.pdf', function( err , res ) {
+    pdf.create( htmlText , options ).toFile('./result/test.pdf', function( err , res ) {
         if (err)
             return console.log( err );
     });
