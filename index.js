@@ -256,4 +256,4 @@ let options = {
  });*/
 
  //module.exports = pdfCreate;
- module.exports = { pdfCreate };
+ module.exports = {pdfCreate };
