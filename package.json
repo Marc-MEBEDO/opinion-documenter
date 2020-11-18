@@ -1,0 +1,15 @@
+{
+  "name": "html-create",
+  "version": "1.0.0",
+  "description": "html create",
+  "main": "index.js",
+  "dependencies": {
+    "html-pdf": "^2.2.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "node test.js"
+  },
+  "author": "MT",
+  "license": "ISC"
+}
