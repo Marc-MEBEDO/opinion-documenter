@@ -8,4 +8,4 @@ async function main() {
     await gutachten.pdfCreate( opinion , opinionDetails );
     console.log( 'done' );
 }
-main()
+main();
