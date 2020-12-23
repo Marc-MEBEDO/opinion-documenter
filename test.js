@@ -4,4 +4,8 @@ const opinion = require('./data/opinions');
 
 const opinionDetails = require('./data/opinionDetails');
 
-gutachten.pdfCreate( opinion, opinionDetails );
+async function main() {
+    await gutachten.pdfCreate( opinion , opinionDetails );
+    console.log( 'done' );
+}
+main()

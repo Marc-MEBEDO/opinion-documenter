@@ -1,10 +1,13 @@
 {
-  "name": "html-create",
+  "name": "opinion-documenter",
   "version": "1.0.0",
-  "description": "html create",
+  "description": "html pdf creater",
   "main": "index.js",
   "dependencies": {
-    "html-pdf": "^2.2.0"
+    "html5-to-pdf": "^4.0.1",
+    "moment": "^2.29.1",
+    "pdf-parse": "^1.1.1",
+    "pdfreader": "^1.2.7"
   },
   "devDependencies": {},
   "scripts": {

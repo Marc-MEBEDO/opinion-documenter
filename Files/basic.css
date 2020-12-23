@@ -1,0 +1,111 @@
+body {
+    font-family: Arial;
+}
+
+/*h1 {
+    text-decoration: underline;
+}*/
+h1, h2, h3, h4 {
+    page-break-after:avoid;
+}
+p {
+    font-size: 11pt;
+    line-height: 115%;
+    page-break-after: avoid;
+}
+/*p.normal {
+    font-family: Arial;
+    margin: 0cm;
+    line-height: 115%;
+    font-size: 11pt;
+    page-break-after: avoid;
+}*/
+
+/*div {
+    font-family: Arial;
+    color: black;
+}
+
+td {
+    font-family: Arial;
+    color: black;
+}*/
+
+.page {
+    page-break-before: always;
+}
+
+h2.ueb2 {
+	font-size: 14pt;
+}
+
+h2.ueb3 {
+    font-size: 12pt;
+}
+
+.toc {
+    page-break-before: always;
+}
+
+.toc_Point {
+    display: flex;
+    margin: 0cm;
+    line-height: 170%;
+    font-size: 11pt;
+}
+
+.toc_Point .item,
+.toc_Point .pageNo {
+    flex: 1 0 auto;
+}
+.toc_Point .dots {
+    flex: 0 1 auto;
+    /*Allows too long content to be hidden.*/
+    overflow: hidden;
+    padding: 0 4px;
+}
+
+.dots::before {
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: clip;
+    content: 
+    "......................................."
+    "......................................."
+    "......................................."
+    "......................................."
+    "......................................."
+}
+
+.depth-0 {
+    padding-left: 0px
+}
+    
+.depth-1 {
+    padding-left: 32px
+}
+
+.depth-2 {
+    padding-left: 64px
+}
+
+.depth-3 {
+    padding-left: 96px
+}
+
+.depth-4 {
+    padding-left: 128px
+}
+
+.depth-5 {
+    padding-left: 160px
+}
+
+.depth-6 {
+    padding-left: 192px
+}
+
+.depth-7 {
+    padding-left: 224px
+}

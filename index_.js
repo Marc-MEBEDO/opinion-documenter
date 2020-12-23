@@ -126,21 +126,18 @@ const createPDFFile_html5_to_pdf = async ( iHTMLText , tmp = false ) => {
 }
 
 const GetRegExp = ( rexp => {
-    return rexp.replace( / /g , ' *?' );
-    //return rexp.replace( ' ' , '( *)' );
-    //return rexp;
+    return rexp.replace( ' ' , '( *)' );
 })
 
-function escapeRegExp( rexp ) {
-    return rexp.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
-    //return rexp;
+function escapeRegExp( string ) {
+    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
 }
 
 const readPDF = async ( arrHead ) => {
     lastPageNo = '';
     return new Promise((then_, catch_) => {
         var pdfreader = require( 'pdfreader' );
-        /*let testRules = [];
+        let testRules = [];
         //var expr = /,Seite ,(\d*|\d*,\d*|\d*,\d*,\d*), von ,/;
         var expr = /,Seite ,(\d*|\d*,\d*|\d*,\d*,\d*), von ,(\d*|\d*,\d*|\d*,\d*,\d*)/;
         arrHead.forEach( ( element ) => {
@@ -174,7 +171,7 @@ const readPDF = async ( arrHead ) => {
                     }
                 })
             )
-        });*/
+        });
         //testRules.push( pdfreader.Rule.on( /^1. Auftrag/ )
         /*testRules.push( pdfreader.Rule.on( /6\.1/g )
         .accumulateAfterHeading()
@@ -182,15 +179,15 @@ const readPDF = async ( arrHead ) => {
             console.log( `extracted value (^1. Auftrag):` , value );
         }))*/
     
-        //let processItem = pdfreader.Rule.makeItemProcessor( testRules );
+        let processItem = pdfreader.Rule.makeItemProcessor( testRules );
         let arrxy = [];
         new pdfreader.PdfReader().parseFileItems( './tmp/html5-to-pdf.pdf' , ( err , item ) => {
-            /*if ( err ) {
+            if ( err ) {
                 console.log( err );
                 catch_( err );
             }
                
-            if ( !item )// Erst jetzt ist Parsing abgeschlossen.
+            /*if ( !item )// Erst jetzt ist Parsing abgeschlossen.
                 then_( true );*/
             if (err)
                 catch_(err);
@@ -201,77 +198,8 @@ const readPDF = async ( arrHead ) => {
                 arrxy.push(item.text);
             }
             // Läuft für jedes zu parsende item.
-            //processItem( item );    
+            processItem( item );    
         });
-    });
-}
-
-const readPDF_parse = async ( arrHead ) => {
-    return new Promise((then_, catch_) => {
-        const fs = require('fs');
-        const pdfreader = require( 'pdf-parse' );
-        let dataBuffer = fs.readFileSync('./tmp/html5-to-pdf.pdf');
- 
-        //pdfreader( dataBuffer , ( data ) => {
-        pdfreader( dataBuffer ).then(function( data ) {
-            // number of pages
-            //console.log(data.numpages);
-            // number of rendered pages
-            //console.log(data.numrender);
-            // PDF info
-            //console.log(data.info);
-            // PDF metadata
-            //console.log(data.metadata); 
-            // PDF.js version
-            // check https://mozilla.github.io/pdf.js/getting_started/
-            //console.log(data.version);
-            // PDF text
-            //console.log( data.text );
-            then_( data.text );
-        })
-        .catch( err => {
-            catch_( err );
-        })
-    })
-}
-
-const SetPages = ( arrHead , text ) => {
-    //console.log( text );
-    arrHead.forEach( ( element ) => {
-        //let exp = new RegExp( '^' + GetRegExp( escapeRegExp( element.name ) ) + '(.*)Seite (\d*) von ' );
-        //let exp = new RegExp( GetRegExp( escapeRegExp( element.name ) ) + '.*?Seite(.*?)von' );//, 'g' );
-        //let exp = new RegExp( GetRegExp( escapeRegExp( '3. Sachstand/ Probleme' ) ) + '(.*?)Seite(.*?)von' , 'g' );
-        //let exp = new RegExp( GetRegExp( escapeRegExp( '7. Ergebnisse der' ) ) + '(.*?)Seite(.*?)von' , 'g' );
-        //console.log( exp );
-
-        //let exp = new RegExp( GetRegExp( escapeRegExp( element.name ) ) + '(.*)MEBEDO(.*)' );
-        //let exp = new RegExp( GetRegExp( escapeRegExp( element.name ) ) + '(.*)Seite (\d*) von ' );
-        //let exp = new RegExp( '1. Auftrag(.*)Seite(.*)von ' );
-        //let exp = new RegExp( '1. *?Auftrag(.*)Seite' );
-        //let exp = new RegExp( '1. Auftrag([.|\s]*)Seite' , 'm' );
-        //let exp = new RegExp( '(1. Auftrag)([\w\W\s]*?)(Seite )(\d)' , 'gm' );
-        let exp = new RegExp( '(1. Auftrag)([\w\W\s]*)' , 'gm' );
-        let match = text.match( exp );
-        //console.log( match.length );
-        console.log( match );
-        /*console.log( exp );
-        if ( match 
-          && match.length > 3 ) {
-            console.log( '2: ' , match[ 2 ] );
-            console.log( '3: ' , match[ 3 ] );
-        }*/
-        if ( match
-          && match.length > 1 ) {
-            /*console.log( match[ 1 ] );
-            console.log( match[ 2 ] );
-            console.log( match[ 3 ] );
-            console.log( match[ 4 ] );
-            console.log( match[ 5 ] );
-              console.log( '2: ' , match[ 1 ][ 2 ] );
-              console.log( '3: ' , match[ 1 ][ 3 ] );*/
-              /*console.log( '-2: ' , match[ match.length - 2 ] );
-              console.log( '-1: ' , match[ match.length - 1 ] );*/
-          }
     });
 }
 
@@ -305,17 +233,18 @@ const ModifyArray = ( headArray ) => {
                     Nur relevant, wenn hasToC == true.
 */
 const pdfCreate = async ( opinion , opinionDetails , hasToC = true , print = false , ToCPageNos = true ) => {
-    let htmlText = '';
+    let ok = true;
     if ( !opinion ) {
         // opinion darf nicht null sein. opinionDetails darf null sein, dann sind eben keine Gutachten-Details in der Ausgabe enthalten.
         console.log( 'error: Keine opinion (Gutachten) übergeben!\nEs erfolgt KEINE Ausgabe.' );
+        ok = false;
     }
     else {
         let genHTMLText = require( './GenHTMLText' );
         // html5-to-pdf.
         // Zunächst den HTML Text generieren.
         let headingsArray = [];
-        htmlText = genHTMLText.generateHTMLText( opinion , opinionDetails , hasToC , print , ToCPageNos , headingsArray );
+        let htmlText = genHTMLText.generateHTMLText( opinion , opinionDetails , hasToC , print , ToCPageNos , headingsArray );
         //console.log( headingsArray );
         // HTML Datei schreiben für 'html5-to-pdf'.
         //createHTMLFile( htmlText );
@@ -375,14 +304,10 @@ const pdfCreate = async ( opinion , opinionDetails , hasToC = true , print = fal
                 console.log( '6' );
             });*/
             try {
-                //let result = await readPDF( headingsArray );
-                //SetPages( headingsArray , result.join( '' ) );
-                let result = await readPDF_parse( headingsArray );
-                SetPages( headingsArray , result );
+                let result = await readPDF( headingsArray );
                 //console.log( headingsArray );
-                //console.log( result );
                 ModifyArray( headingsArray );
-                //console.log( result.join( '' ) );
+                console.log( result.join( '' ) );
                 //console.log( headingsArray );
                 // HTML Text neu generieren mit Seitenzahlen.
                 htmlText = genHTMLText.generateHTMLText( opinion , opinionDetails , hasToC , print , ToCPageNos , headingsArray );
@@ -392,6 +317,7 @@ const pdfCreate = async ( opinion , opinionDetails , hasToC = true , print = fal
             }
             catch( err ) {
                 console.log( err );
+                ok = false;
             }
         }
         else {
@@ -400,13 +326,12 @@ const pdfCreate = async ( opinion , opinionDetails , hasToC = true , print = fal
             }
             catch( err ) {
                 console.log( err );
+                ok = false;
             }
         }
     }
-    return htmlText;
+    return ok;
  }
-
- //npm install pdf-parse
 
  //module.exports = pdfCreate;
  module.exports = { pdfCreate };
