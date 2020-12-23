@@ -28,7 +28,10 @@ const GetParticipant = ( element ) => {
 }
 
 const GetSecondPage = ( opinion ) => {
-    let pagedata = fs.readFileSync( './Files/page2.html' , 'utf-8' );
+    let path = require( 'path' );
+    let pathFile = path.join( __dirname , 'Files' , 'page2.html' );
+    let pagedata = fs.readFileSync( pathFile , 'utf-8' );
+    //let pagedata = fs.readFileSync( './Files/page2.html' , 'utf-8' );
     pagedata = pagedata.replace( /\{\{company_name\}\}/g , opinion.customer.name );
     //pagedata = pagedata.replace( '{{contact_person}}' , opinion.customer.name );
     pagedata = pagedata.replace( /\{\{street\}\}/g , opinion.customer.street );
