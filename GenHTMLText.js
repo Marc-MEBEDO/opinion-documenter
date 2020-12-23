@@ -2,7 +2,6 @@ const fs = require('fs');
 const helper = require('./helper');
 
 const GetFirstPage = ( opinion ) => {
-    console.log( __dirname );
     let path = require( 'path' );
     let pathFile = path.join( __dirname , 'Files' , 'page1.html' );
     let pagedata = fs.readFileSync( pathFile , 'utf-8' );

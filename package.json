@@ -7,7 +7,7 @@
     "html5-to-pdf": "^4.0.1",
     "moment": "^2.29.1",
     "pdf-parse": "^1.1.1",
-    "pdfreader": "^1.2.7"
+    "pdfreader": "^1.2.8"
   },
   "devDependencies": {},
   "scripts": {

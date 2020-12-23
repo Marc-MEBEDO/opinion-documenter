@@ -19,8 +19,10 @@ const createPDFFile_html5_to_pdf = async ( iPathFile , iHTMLText , tmp = false )
     //
     //iHTMLText = fs.readFileSync( './result/html5-to-pdf.html' , 'utf-8' );
     //
-
-    let header_image = fs.readFileSync( './Files/header_image.html' , 'utf-8' );
+    let path = require( 'path' );
+    let pathFile = path.join( __dirname , 'Files' , 'header_image.html' );
+    let header_image = fs.readFileSync( pathFile , 'utf-8' );
+    //let header_image = fs.readFileSync( './Files/header_image.html' , 'utf-8' );
     
     // Aktuelles Datum für Footer selbst "holen".
     let dateStr = '';
@@ -33,7 +35,7 @@ const createPDFFile_html5_to_pdf = async ( iPathFile , iHTMLText , tmp = false )
 
     // PDF Datei schreiben mit 'html5-to-pdf'.
     let _HTML5ToPDF = require( 'html5-to-pdf' );
-    let path = require( 'path' );
+    //let path = require( 'path' );
     let outputFilePath = '';
     if ( tmp )
         outputFilePath = path.join( __dirname , 'tmp' , 'html5-to-pdf.pdf' );
@@ -209,9 +211,12 @@ const readPDF = async ( arrHead ) => {
 
 const readPDF_parse = async ( arrHead ) => {
     return new Promise((then_, catch_) => {
-        const fs = require('fs');
-        const pdfreader = require( 'pdf-parse' );
-        let dataBuffer = fs.readFileSync('./tmp/html5-to-pdf.pdf');
+        let fs = require('fs');
+        let pdfreader = require( 'pdf-parse' );
+        let path = require( 'path' );
+        let pathFile = path.join( __dirname , 'tmp' , 'html5-to-pdf.pdf' );
+        let dataBuffer = fs.readFileSync( pathFile );// !!! Hier kein: , 'utf-8' !!!
+        //let dataBuffer = fs.readFileSync( './tmp/html5-to-pdf.pdf' );
  
         //pdfreader( dataBuffer , ( data ) => {
         pdfreader( dataBuffer ).then(function( data ) {
@@ -306,7 +311,7 @@ const ModifyArray = ( headArray ) => {
     ToCPageNos:     Bool, der angibt, ob im Inhaltsverzeichnis Seitenzahlen angegeben werden sollen.
                     Nur relevant, wenn hasToC == true.
 */
-const pdfCreate = async ( pathFile , opinion , opinionDetails , hasToC = true , print = false , ToCPageNos = true ) => {
+const pdfCreate = async ( opinion , opinionDetails , pathFile , hasToC = true , print = false , ToCPageNos = true ) => {
     let htmlText = '';
     let helper = require('./helper');
     if ( helper.EmptyString( pathFile ) ) {
