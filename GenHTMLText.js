@@ -2,7 +2,11 @@ const fs = require('fs');
 const helper = require('./helper');
 
 const GetFirstPage = ( opinion ) => {
-    let pagedata = fs.readFileSync( './Files/page1.html' , 'utf-8' );
+    console.log( __dirname );
+    let path = require( 'path' );
+    let pathFile = path.join( __dirname , 'Files' , 'page1.html' );
+    let pagedata = fs.readFileSync( pathFile , 'utf-8' );
+    //let pagedata = fs.readFileSync( './Files/page1.html' , 'utf-8' );
     let opinion_no = '[57464]';
     pagedata = pagedata.replace( /\{\{opinionNo\}\}/g , opinion_no );
 

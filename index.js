@@ -12,7 +12,7 @@
 
 let lastPageNo = '';
 
-const createPDFFile_html5_to_pdf = async ( iHTMLText , tmp = false ) => {
+const createPDFFile_html5_to_pdf = async ( iPathFile , iHTMLText , tmp = false ) => {
     // Benötigte Dateien lesen.
     let fs = require( 'fs' );
     
@@ -38,7 +38,8 @@ const createPDFFile_html5_to_pdf = async ( iHTMLText , tmp = false ) => {
     if ( tmp )
         outputFilePath = path.join( __dirname , 'tmp' , 'html5-to-pdf.pdf' );
     else
-        outputFilePath = path.join( __dirname , 'result' , 'html5-to-pdf.pdf' );
+        outputFilePath = iPathFile;
+        //outputFilePath = path.join( __dirname , 'result' , 'html5-to-pdf.pdf' );
         
 
     return new Promise( async ( resolve , reject ) => {
@@ -294,6 +295,7 @@ const ModifyArray = ( headArray ) => {
 }
 
 /* Parameter:
+    pathFile:       Pfad und Dateiname des zu erstellenden PDF Dokuments.
     opinion:        Das Gutachten "Objekt".
     opinionDetails: Das Array der zum Gutachten gehörenden Gutachten-Details.
     hasToC:         Bool, der angibt, ob Inhaltsverzeichnis generiert werden soll.
@@ -304,9 +306,14 @@ const ModifyArray = ( headArray ) => {
     ToCPageNos:     Bool, der angibt, ob im Inhaltsverzeichnis Seitenzahlen angegeben werden sollen.
                     Nur relevant, wenn hasToC == true.
 */
-const pdfCreate = async ( opinion , opinionDetails , hasToC = true , print = false , ToCPageNos = true ) => {
+const pdfCreate = async ( pathFile , opinion , opinionDetails , hasToC = true , print = false , ToCPageNos = true ) => {
     let htmlText = '';
-    if ( !opinion ) {
+    let helper = require('./helper');
+    if ( helper.EmptyString( pathFile ) ) {
+        // PDF Dateiname inkl. Pfad muss angegeben sein.
+        console.log( 'error: Kein Dateipfad und Dateiname des PDF Dokuments übergeben!\nEs erfolgt KEINE Ausgabe.' );
+    }
+    else if ( !opinion ) {
         // opinion darf nicht null sein. opinionDetails darf null sein, dann sind eben keine Gutachten-Details in der Ausgabe enthalten.
         console.log( 'error: Keine opinion (Gutachten) übergeben!\nEs erfolgt KEINE Ausgabe.' );
     }
@@ -324,7 +331,7 @@ const pdfCreate = async ( opinion , opinionDetails , hasToC = true , print = fal
             // Mit Inhaltverzeichnis und Seitenzahlen.
             // Dafür muss PDF temporär geschrieben, eingelesen und dann final mit den zuvor ermittelten Seitenzahlen neu geschrieben werden.
             // PDF temporär schreiben.
-            await createPDFFile_html5_to_pdf( htmlText , true );
+            await createPDFFile_html5_to_pdf( pathFile , htmlText , true );
             
 ////
             /*headingsArray = [
@@ -388,7 +395,7 @@ const pdfCreate = async ( opinion , opinionDetails , hasToC = true , print = fal
                 htmlText = genHTMLText.generateHTMLText( opinion , opinionDetails , hasToC , print , ToCPageNos , headingsArray );
                 // HTML Datei final schreiben für 'html5-to-pdf'.
                 //createHTMLFile( htmlText );
-                await createPDFFile_html5_to_pdf( htmlText );
+                await createPDFFile_html5_to_pdf( pathFile , htmlText );
             }
             catch( err ) {
                 console.log( err );
@@ -396,7 +403,7 @@ const pdfCreate = async ( opinion , opinionDetails , hasToC = true , print = fal
         }
         else {
             try {
-                await createPDFFile_html5_to_pdf( htmlText );
+                await createPDFFile_html5_to_pdf( pathFile , htmlText );
             }
             catch( err ) {
                 console.log( err );
