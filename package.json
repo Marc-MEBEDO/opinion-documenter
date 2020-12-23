@@ -14,5 +14,5 @@
     "test": "node test.js"
   },
   "author": "MT",
-  "license": "ISC"
+  "license": "MIT"
 }
