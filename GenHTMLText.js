@@ -271,7 +271,7 @@ const GetDynContent = ( opinionDetails , hasToC , print , ToCPageNos , headingsA
         text += helper.GetFormatText( currentDetail , chapterNo , 'A' , print );        
         // Weitere OpinionDetails zu diesem OpinionDetail.
         // Auskommentiert nur für Tests:
-        //text += GetChildren( opinionDetails , currentDetail._id , chapterNo , print );
+        text += GetChildren( opinionDetails , currentDetail._id , chapterNo , print );
         text += `</div>`;
         chapterNo += 1;
     });
@@ -294,6 +294,8 @@ const ReplaceOpinionVariables = ( htmlText , opinion ) => {
 
 const ReplaceInternalVariables = ( htmlText , opinion ) => {
     //...
+    //pagedata = pagedata.replace( /\{\{company_name\}\}/g , opinion.customer.name );
+
     return htmlText;
 }
 

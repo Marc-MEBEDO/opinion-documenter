@@ -83,12 +83,12 @@ const GetFormatText = ( opDetail , chapterNo , layer , print ) => {
       if ( layer == 'A' )
         text += `<h2>${chapterNo}. ${title}</h2>`;
       else
-        text += `<h2 class="ueb3">${chapterNo} ${title}</h2>`
+        text += `<h2>${chapterNo} ${title}</h2>`
     }
     else {
       if ( layer == 'A' )
         //text += `<h2 id="${GetID( chapterNo )}">${chapterNo}. ${title}</h2>`;
-        text += `<h2 class="ueb3" id="${GetID( chapterNo )}">${chapterNo}. ${title}</h2>`;
+        text += `<h2 class="ueb2" id="${GetID( chapterNo )}">${chapterNo}. ${title}</h2>`;
       else
         text += `<h2 class="ueb3" id="${GetID( chapterNo )}">${chapterNo} ${title}</h2>`
     }

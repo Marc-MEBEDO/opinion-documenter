@@ -1,8 +1,8 @@
-const gutachten = require('./index.js');
+const gutachten = require( './index.js' );
 
-const opinion = require('./data/opinions');
+const opinion = require( './data/opinions' );
 
-const opinionDetails = require('./data/opinionDetails');
+const opinionDetails = require( './data/opinionDetails' );
 
 async function main() {
     let path = require( 'path' );
