@@ -7,6 +7,18 @@ const EmptyString = ( stringToCheck ) => {
         return false;
 }
 
+const GetTodayDateString = () => {
+  // Aktuelles Datum zurückgeben.
+  let dateStr = '';
+  let moment = require( 'moment' );
+  let useMomentFormat = true;
+  if ( useMomentFormat )
+      dateStr = moment().format( 'DD.MM.YYYY' );
+  else
+      dateStr = new Date().toLocaleDateString('de-DE');
+  return dateStr;
+}
+
 const opinionDetailsSortASC = ( opinionDetailA , opinionDetailB ) => {
   // Funktion zur Sortierung der Gutachten-Details.
   let value1 = opinionDetailA.orderString.trim();
@@ -64,74 +76,103 @@ const GetID = ( chapter ) => {
   return String( chapter ).replace( /\./g , '-' );
 }
 
-const GetFormatText = ( opDetail , chapterNo , layer , print ) => {
-  let title = '';
+const GetFormatText = ( opDetail , chapterNo , layer ) => {
   let text = '';
-  if ( !EmptyString( opDetail.printTitle ) )
-    title = opDetail.printTitle;
-  else
-    title = opDetail.title;
   
   let formatText = opDetail.text;
+  // Kapitel in Inhaltsverzeichnis?
+  // Wenn showInToC = true und PrintTitle nicht leer.
+  if ( opDetail.showInToC 
+    && !EmptyString( opDetail.printTitle ) ) {
+    if ( layer == 'A' )
+      // Auf 1. Ebene (=Layer A) immer h2.
+      text += `<h2 class="ueb2" id="${GetID( chapterNo )}">${chapterNo}. ${opDetail.printTitle}</h2>`;
+    else if ( opDetail.type == 'QUESTION'
+            || opDetail.type == 'ANSWER'
+            || opDetail.type == 'RECOMMENDATION' ) {}// wird unten gesetzt.
+    else
+      text += `<h2 class="ueb3" id="${GetID( chapterNo )}">${chapterNo} ${opDetail.printTitle}</h2>`;
+  }
+  else if ( !EmptyString( opDetail.printTitle ) ) {
+    if ( opDetail.type == 'QUESTION'
+      || opDetail.type == 'ANSWER'
+      || opDetail.type == 'RECOMMENDATION' ) {}// wird unten gesetzt.
+    else
+      text += `<p><b>${opDetail.printTitle}</b></p>`
+  }
+
   // Formatierung abhängig vom type.
   if ( opDetail.type == 'INFO' ) {
-    text += `<p><b>${title}</b></p>`;
     // formatText...
   }
   else if ( opDetail.type == 'HEADING' ) {
-    if ( print ) {
-      if ( layer == 'A' )
-        text += `<h2>${chapterNo}. ${title}</h2>`;
-      else
-        text += `<h2>${chapterNo} ${title}</h2>`
-    }
-    else {
-      if ( layer == 'A' )
-        //text += `<h2 id="${GetID( chapterNo )}">${chapterNo}. ${title}</h2>`;
-        text += `<h2 class="ueb2" id="${GetID( chapterNo )}">${chapterNo}. ${title}</h2>`;
-      else
-        text += `<h2 class="ueb3" id="${GetID( chapterNo )}">${chapterNo} ${title}</h2>`
-    }
     // formatText...
   }
   else if ( opDetail.type == 'TEXT' ) {
-    text += `<p><b>${title}</b></p>`;
     // formatText...
   }
   else if ( opDetail.type == 'QUESTION' ) {
-    text += `<p><b>${title}</b></p>`;
-    // formatText...
+    text += `<div class="question">`;
+    if ( opDetail.showInToC
+      && !EmptyString( opDetail.printTitle ) ) {
+      text += `<p id="${GetID( chapterNo )}"><b>${chapterNo}. ${opDetail.printTitle}</b></p>`;
+    }
+    else if ( !EmptyString( opDetail.printTitle ) ) {
+      text += `<p><b>${chapterNo}. ${opDetail.printTitle}</b></p>`;
+    }
+    if ( !EmptyString( formatText ) )
+      text += `<p>${formatText}</p>`;
+    text += `</div>`;
+    formatText = '';
   }
   else if ( opDetail.type == 'ANSWER' ) {
-    text += `<p><b>${title}</b></p>`;
-    // formatText...
+    text += `<div class="answer">`;
+    if ( opDetail.showInToC
+      && !EmptyString( opDetail.printTitle ) ) {
+      text += `<p id="${GetID( chapterNo )}"><b>${chapterNo}. ${opDetail.printTitle}</b></p>`;
+    }
+    else if ( !EmptyString( opDetail.printTitle ) ) {
+      text += `<p><b>${opDetail.printTitle}</b></p>`;
+    }
+    if ( !EmptyString( formatText ) ) {
+      text += `<p><u>Antwort/Ist-Zustand</u></p>`;
+      text += `<p>${formatText}</p>`;
+    }
+    text += `</div>`;
+    formatText = '';
   }
   else if ( opDetail.type == 'DEFINITION' ) {
-    text += `<p><b>${title}</b></p>`;
     // formatText...
   }
   else if ( opDetail.type == 'RECOMMENDATION' ) {
-    text += `<p><b>${title}</b></p>`;
-    // formatText...
+    text += `<div class="recommendation">`;
+    if ( opDetail.showInToC
+      && !EmptyString( opDetail.printTitle ) ) {
+      text += `<p id="${GetID( chapterNo )}"><b>${chapterNo}. ${opDetail.printTitle}</b></p>`;
+    }
+    else if ( !EmptyString( opDetail.printTitle ) ) {
+      text += `<p><b>${opDetail.printTitle}</b></p>`;
+    }
+    if ( !EmptyString( formatText ) ) {
+      text += `<p><u>Handlungsempfehlung</u></p>`;
+      text += `<p>${formatText}</p>`;
+    }
+    text += `</div>`;
+    formatText = '';
   }
   else if ( opDetail.type == 'IMPORTANT' ) {
-    text += `<p><b>${title}</b></p>`;
     // formatText...
   }
   else if ( opDetail.type == 'NOTE' ) {
-    text += `<p><b>${title}</b></p>`;
     // formatText...
   }
   else if ( opDetail.type == 'ATTENTION' ) {
-    text += `<p><b>${title}</b></p>`;
     // formatText...
   }
   else if ( opDetail.type == 'BESTIMMUNGEN' ) {
-    text += `<p><b>${title}</b></p>`;
     // formatText...
   }
   else if ( opDetail.type == 'TODOLIST' ) {
-    text += `<p><b>${title}</b></p>`;
     // formatText...
   }
   if ( !EmptyString( formatText ) )
@@ -140,4 +181,4 @@ const GetFormatText = ( opDetail , chapterNo , layer , print ) => {
   return text;
 };
 
-module.exports = { EmptyString , opinionDetailsSortASC , GetFormatText , GetID };
+module.exports = { EmptyString , GetTodayDateString , opinionDetailsSortASC , GetFormatText , GetID };

@@ -10,6 +10,7 @@
 
 let lastPageNo = '';
 const tmpPDFFileName = '_tmp.pdf';
+const helper = require('./helper');
 
 const createPDFFile_html5_to_pdf = async ( iPathFile , iHTMLText , tmp = false ) => {
     // Benötigte Dateien lesen.
@@ -18,13 +19,14 @@ const createPDFFile_html5_to_pdf = async ( iPathFile , iHTMLText , tmp = false )
     let pathFile = path.join( __dirname , 'Files' , 'header_image.html' );
     let header_image = fs.readFileSync( pathFile , 'utf-8' );    
     // Aktuelles Datum für Footer selbst "holen".
-    let dateStr = '';
+    /*let dateStr = '';
     let moment = require( 'moment' );
     let useMomentFormat = true;
     if ( useMomentFormat )
         dateStr = moment().format( 'DD.MM.YYYY' );
     else
-        dateStr = new Date().toLocaleDateString('de-DE');
+        dateStr = new Date().toLocaleDateString('de-DE');*/
+    let dateStr = helper.GetTodayDateString();
 
     // PDF Datei schreiben mit 'html5-to-pdf'.
     let _HTML5ToPDF = require( 'html5-to-pdf' );
@@ -47,7 +49,7 @@ const createPDFFile_html5_to_pdf = async ( iPathFile , iHTMLText , tmp = false )
             pdf: {
                 displayHeaderFooter: true,
                 format: 'A4',
-                //printBackground: true,
+                printBackground: true,
                 headerTemplate:
                     //`<div id="header-template">
                     //`<div id="header-template" style="position:absolute; top:6mm;">
@@ -183,7 +185,6 @@ const SetPages = ( arrHead , text ) => {
 
 const ModifyArray = ( headArray ) => {
     if ( headArray.length > 0 ) {
-        let helper = require('./helper');
         let pre = '';
         // Schleife, um headArray vom Ende nach vorne durchzugehen und Seitennummer zu setzen, falls noch nicht vorhanden.
         for( let i = headArray.length - 1 ;  i >= 0 ; i-- ) {
@@ -200,9 +201,10 @@ const ModifyArray = ( headArray ) => {
 }
 
 /* Parameter:
-    pathFile:       Pfad und Dateiname des zu erstellenden PDF Dokuments.
     opinion:        Das Gutachten "Objekt".
     opinionDetails: Das Array der zum Gutachten gehörenden Gutachten-Details.
+    pathFile:       Pfad und Dateiname des zu erstellenden PDF Dokuments.
+    hasAbbreviationsPage...
     hasToC:         Bool, der angibt, ob Inhaltsverzeichnis generiert werden soll.
     print:          Bool, der angibt, ob PDF für Ausdruck (=true) gedacht ist oder nicht (=false).
                     Wenn print == false (also rein für digitale Betrachtung), dann werden im Inhaltsverzeichnis Links eingefügt.
@@ -211,9 +213,8 @@ const ModifyArray = ( headArray ) => {
     ToCPageNos:     Bool, der angibt, ob im Inhaltsverzeichnis Seitenzahlen angegeben werden sollen.
                     Nur relevant, wenn hasToC == true.
 */
-const pdfCreate = async ( opinion , opinionDetails , pathFile , hasToC = true , print = false , ToCPageNos = true ) => {
+const pdfCreate = async ( opinion , opinionDetails , pathFile , hasAbbreviationsPage = true , hasToC = true , print = false , ToCPageNos = true ) => {
     let htmlText = '';
-    let helper = require('./helper');
     if ( helper.EmptyString( pathFile ) ) {
         // PDF Dateiname inkl. Pfad muss angegeben sein.
         console.log( 'error: Kein Dateipfad und Dateiname des PDF Dokuments übergeben!\nEs erfolgt KEINE Ausgabe.' );
@@ -226,7 +227,7 @@ const pdfCreate = async ( opinion , opinionDetails , pathFile , hasToC = true , 
         let genHTMLText = require( './GenHTMLText' );
         // Zunächst den HTML Text generieren.
         let headingsArray = [];
-        htmlText = genHTMLText.generateHTMLText( opinion , opinionDetails , hasToC , print , ToCPageNos , headingsArray );
+        htmlText = genHTMLText.generateHTMLText( opinion , opinionDetails , hasAbbreviationsPage , hasToC , print , ToCPageNos , headingsArray );
         // HTML Datei schreiben für 'html5-to-pdf'.
         //createHTMLFile( htmlText );
         if ( hasToC && ToCPageNos ) {
@@ -240,7 +241,7 @@ const pdfCreate = async ( opinion , opinionDetails , pathFile , hasToC = true , 
                 SetPages( headingsArray , result );
                 ModifyArray( headingsArray );
                 // HTML Text neu generieren mit Seitenzahlen.
-                htmlText = genHTMLText.generateHTMLText( opinion , opinionDetails , hasToC , print , ToCPageNos , headingsArray );
+                htmlText = genHTMLText.generateHTMLText( opinion , opinionDetails , hasAbbreviationsPage , hasToC , print , ToCPageNos , headingsArray );
                 // HTML Datei final schreiben für 'html5-to-pdf'.
                 //createHTMLFile( htmlText );
                 // PDF Datei final schreiben mit 'html5-to-pdf'.

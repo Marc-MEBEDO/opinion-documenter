@@ -31,8 +31,22 @@ td {
     color: black;
 }*/
 
-.page {
+.page-Breaks {
     page-break-before: always;
+    page-break-after: always;
+}
+
+.page-breakBefore {
+    page-break-before: always;
+}
+
+.page-breakAfter {
+    page-break-after: always;
+}
+
+.page-noBreak {
+    page-break-before: avoid;
+    page-break-after: avoid;
 }
 
 h2.ueb2 {
@@ -43,9 +57,18 @@ h2.ueb3 {
     font-size: 12pt;
 }
 
-.toc {
-    page-break-before: always;
+ul.part {
+    font-size: 11pt;
+    list-style-position: inside;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
 }
+
+/*.toc {
+    page-break-before: always;
+    page-break-after: always;
+}*/
 
 .toc_Point {
     display: flex;
@@ -54,11 +77,30 @@ h2.ueb3 {
     font-size: 11pt;
 }
 
+.abbreviations_Point {
+    display: flex;
+    margin: 0cm;
+    line-height: 130%;
+    font-size: 11pt;
+}
+
+.abbreviations_Point .item,
+.abbreviations_Point .longText {
+    flex: 1 0 auto;
+}
+
 .toc_Point .item,
 .toc_Point .pageNo {
     flex: 1 0 auto;
 }
 .toc_Point .dots {
+    flex: 0 1 auto;
+    /*Allows too long content to be hidden.*/
+    overflow: hidden;
+    padding: 0 4px;
+}
+
+.abbreviations_Point .dots {
     flex: 0 1 auto;
     /*Allows too long content to be hidden.*/
     overflow: hidden;
@@ -108,4 +150,44 @@ h2.ueb3 {
 
 .depth-7 {
     padding-left: 224px
+}
+
+div.question {
+    font-size: 10pt;
+    //width: 100%;
+    width: 17.8cm;
+    border: 1px solid black;
+    border-collapse: collapse;
+    line-height: 100%;
+    background-color: #F2F2F2;
+    padding-left: 1.5em;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+    display: inline-block;
+}
+
+div.answer {
+    font-size: 10pt;
+    width: 17.8cm;
+    border: 1px solid black;
+    line-height: 100%;
+    padding-left: 1.5em;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+    display: inline-block;
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+
+div.recommendation {
+    font-size: 10pt;
+    width: 17.8cm;
+    border: 1px solid black;
+    line-height: 100%;
+    padding-left: 1.5em;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+    display: inline-block;
+    margin-top: 0px;
+    margin-bottom: 0px;
 }

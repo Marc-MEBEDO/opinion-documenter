@@ -1,8 +1,8 @@
 const fs = require('fs');
-const path = require( 'path' );
 const helper = require('./helper');
 
-const GetFirstPage = () => {
+const GetFirstPage = ( opinion ) => {
+    let path = require( 'path' );
     let pathFile = path.join( __dirname , 'Files' , 'page1.html' );
     let pagedata = fs.readFileSync( pathFile , 'utf-8' );
     //let pagedata = fs.readFileSync( './Files/page1.html' , 'utf-8' );
@@ -76,11 +76,12 @@ const GetExpert = ( expert , long = true ) => {
 }
 
 const GetSecondPage = ( opinion ) => {
+    let path = require( 'path' );
     let pathFile = path.join( __dirname , 'Files' , 'page2.html' );
     let pagedata = fs.readFileSync( pathFile , 'utf-8' );
     //let pagedata = fs.readFileSync( './Files/page2.html' , 'utf-8' );
-    //pagedata = pagedata.replace( /\{\{company_name\}\}/ , opinion.customer.name );
-    pagedata = pagedata.replace( /\{\{Name_Auftraggeber\}\}/ , 'opinion.customer.contact_person' );
+    pagedata = pagedata.replace( /\{\{company_name\}\}/ , opinion.customer.name );
+    //pagedata = pagedata.replace( '{{contact_person}}' , opinion.customer.name );
     pagedata = pagedata.replace( /\{\{street\}\}/ , opinion.customer.street );
     pagedata = pagedata.replace( /\{\{postal_city\}\}/ , (opinion.customer.postalCode + ' ' + opinion.customer.city) );
 
@@ -122,37 +123,11 @@ const GetSecondPage = ( opinion ) => {
     return pagedata;
 }
 
-const GetAbbreviationsPage = () => {
-    let pathFile = path.join( __dirname , 'Files' , 'page_abbreviations.html' );
-    let pagedata = fs.readFileSync( pathFile , 'utf-8' );
-    //let pagedata = fs.readFileSync( './Files/page1.html' , 'utf-8' );
-    //pagedata = pagedata.replace( /\{\{opinionNo\}\}/g , opinion.opinionNo );
-
-    return pagedata;
-}
-
 const FilterOpDetailsLayerA = ( opDetail ) => {
     return ( opDetail
       && !opDetail.deleted
       && helper.EmptyString( opDetail.refParentDetail ) );
       //&& opDetail.type == 'HEADING' );// Wird hier nicht geprüft, ansonsten würden LayerA Details von jedem anderen type nie angezeigt!
-}
-
-const GetPageClass = ( opDetail ) => {
-    //`<div class="page...">`;
-    let pageClass = '';
-    if ( opDetail.pagebreakBefore ) {
-        if ( opDetail.pagebreakAfter )
-            pageClass = 'page-Breaks';
-        else
-            pageClass = 'page-breakBefore';
-    }
-    else if ( opDetail.pagebreakAfter )
-        pageClass = 'page-breakAfter';
-    else
-        pageClass = 'page-noBreak';    
-
-    return pageClass;
 }
 
 const GetHeadingRegExp = ( ToCPoint ) => {
@@ -173,8 +148,6 @@ const GetToCItemDepth = ( chapter ) => {
         index = chapter.indexOf( '.' , index + 1 )
     }
     //console.log( countedPoints );
-    if ( countedPoints > 7 )
-        countedPoints = 7;// In CSS (basic.css) maximal eingestellte Einrückung.
     return `item depth-${countedPoints}`;
 }
 
@@ -231,10 +204,11 @@ const GetChildrenToc = ( opDetails , parentID , chapter , print , ToCPageNos , w
         text += GetChildrenToc( opDetails , currentDetailValue._id , `${chapter}.${subChapterNo}` , print , ToCPageNos , writePageNoToArray , headingsArray );
         subChapterNo += 1;
     });
+    //text += `</td></tr></table>`;
     return text;
 }
 
-const GetChildren = ( opDetails , parentID , chapter ) => {
+const GetChildren = ( opDetails , parentID , chapter , print ) => {
     // "Holt" alle Children zum übergebenen Gutachten-Detail (=parentID).
     let text = '';
     let subChapterNo = 1;
@@ -243,23 +217,18 @@ const GetChildren = ( opDetails , parentID , chapter ) => {
               && !opDetail.deleted
               && opDetail.refParentDetail == parentID );
     });
-    if ( detailArray.length == 0 )
-        return ''; 
-
     detailArray.forEach( currentDetailValue => {
-        text += `<div class="${GetPageClass( currentDetailValue )}">`;  
-        text += helper.GetFormatText( currentDetailValue , `${chapter}.${subChapterNo}` , 'B' );    
-        text += `</div>`;  
-        text += GetChildren( opDetails , currentDetailValue._id , `${chapter}.${subChapterNo}` );
+        text += helper.GetFormatText( currentDetailValue , `${chapter}.${subChapterNo}` , 'B' , print );      
+        text += GetChildren( opDetails , currentDetailValue._id , `${chapter}.${subChapterNo}` , print );
         //if ( currentDetailValue.type == 'HEADING' )
-        /*if ( currentDetailValue.showInToC
-          && !helper.EmptyString( currentDetailValue.printTitle ) )*/
+        if ( currentDetailValue.showInToC
+          && !helper.EmptyString( currentDetailValue.printTitle ) )
             subChapterNo += 1;
     });
     return text;
 }
 
-const GetDynContent = ( opinionDetails , hasAbbreviationsPage , hasToC , print , ToCPageNos , headingsArray ) => {
+const GetDynContent = ( opinionDetails , hasToC , print , ToCPageNos , headingsArray ) => {
     // Inhalt ab Seite 3.
     if ( !opinionDetails )
         return '';
@@ -270,9 +239,8 @@ const GetDynContent = ( opinionDetails , hasAbbreviationsPage , hasToC , print ,
     opinionDetails.sort( helper.opinionDetailsSortASC );   
     const opDetailLayerA = opinionDetails.filter( FilterOpDetailsLayerA );
     if ( hasToC ) {
-        text += `<div class="page-Breaks">
-                    <h2 class="ueb2">Inhaltsverzeichnis</h2>`;
-                    //<p><b>Inhaltsverzeichnis</b></p>`;
+        text += `<div class="toc">
+                    <p><b>Inhaltsverzeichnis</b></p>`;
         //////////////
         // Test zum Einfügen eines Bildes.
         //text += `<img style="width: 300px;" src="file:/C:/Users/marc.tomaschoff/meteor/html-create/Files/MEBEDO_LOGO_PRINT_CMYK.jpg" alt="TEST">`;
@@ -295,41 +263,10 @@ const GetDynContent = ( opinionDetails , hasAbbreviationsPage , hasToC , print ,
         text += header_image;*/
         //////////////
         let writePageNoToArray = false;//Variable, ob Seitennummern in Array geschrieben werden sollen = nur für 1. temporären Durchgang.
-        const abbreviationsPage = 'Abkürzungsverzeichnis';
         if ( ToCPageNos
           && ( !headingsArray
-            || headingsArray.length == 0 ) ) {
-            if ( hasAbbreviationsPage )
-                headingsArray.push( GetHeadingRegExp( abbreviationsPage ) );
+            || headingsArray.length == 0 ) )
             writePageNoToArray = true;
-        }
-        if ( hasAbbreviationsPage ) {
-            // Abkürzungsverzeichnis im Inhaltsverzeichnis.
-            text += `<div class="toc_Point">`;
-            let pageNo = '';
-            if ( ToCPageNos
-              && !writePageNoToArray ) {
-                // Seitennummern ins Inhaltsverzeichnis schreiben.
-                let pageNoElement = headingsArray.find( (element) => {
-                    return ( element.name == abbreviationsPage );
-                });
-                if ( pageNoElement )
-                    pageNo = pageNoElement.page;
-                if ( print )
-                    text += `<span class="item"><b>${abbreviationsPage}</b></span>`;
-                else
-                    text += `<span class="item"><b><a href="#0">${abbreviationsPage}</a></b></span>`;
-                text += `<span class="dots"></span>
-                         <span class="pageNo">${pageNo}</span>`;
-            }
-            else {
-                if ( print )
-                    text += `<span class="item"><b>${abbreviationsPage}</b></span>`;
-                else
-                    text += `<span class="item"><b><a href="#0">${abbreviationsPage}</a></b></span>`;
-            }
-            text += `</div>`;
-        }
 
         // 1. Durchgang für Inhaltsverzeichnis.
         opDetailLayerA.forEach( currentDetail => {
@@ -377,32 +314,25 @@ const GetDynContent = ( opinionDetails , hasAbbreviationsPage , hasToC , print ,
         text += `</div>`;
     }
 
-    // Abkürzungsverzeichnis.
-    if ( hasAbbreviationsPage ) {
-        text += GetAbbreviationsPage();
-    }
-
     // 2. Durchgang für Inhalt: Einzelne Kapitel.
     chapterNo = 1;
     opDetailLayerA.forEach( currentDetail => {
-        //text += `<div class="page">`;
-        text += `<div class="${GetPageClass( currentDetail )}">`;
-        text += helper.GetFormatText( currentDetail , chapterNo , 'A' );        
-        text += `</div>`;
+        text += `<div class="page">`;
+        text += helper.GetFormatText( currentDetail , chapterNo , 'A' , print );        
         // Weitere OpinionDetails zu diesem OpinionDetail.
         // Auskommentiert nur für Tests:
-        text += GetChildren( opinionDetails , currentDetail._id , chapterNo );
-        
+        //text += GetChildren( opinionDetails , currentDetail._id , chapterNo , print );
+        text += `</div>`;
         chapterNo += 1;
     });
     return text;
 }
 
-const GetBody = ( opinion, opinionDetails , hasAbbreviationsPage , hasToC , print , ToCPageNos , headingsArray ) => {
+const GetBody = ( opinion, opinionDetails , hasToC , print , ToCPageNos , headingsArray ) => {
     return '<body>'
-         + GetFirstPage()
+         + GetFirstPage( opinion )
          + GetSecondPage( opinion )
-         + GetDynContent( opinionDetails , hasAbbreviationsPage , hasToC , print , ToCPageNos , headingsArray )
+         + GetDynContent( opinionDetails , hasToC , print , ToCPageNos , headingsArray )
          //+ GetFinalPage( opinion )
          + '</body>';
 }
@@ -436,8 +366,8 @@ const ReplaceVariables = ( htmlText , opinion ) => {
     return htmlText;
 }
 
-const generateHTMLText = ( opinion , opinionDetails , hasAbbreviationsPage , hasToC , print , ToCPageNos , headingsArray ) => {
-    return ReplaceVariables( GetBody( opinion , opinionDetails , hasAbbreviationsPage , hasToC , print , ToCPageNos , headingsArray ) , opinion );
+const generateHTMLText = ( opinion , opinionDetails , hasToC , print , ToCPageNos , headingsArray ) => {
+    return ReplaceVariables( GetBody( opinion , opinionDetails , hasToC , print , ToCPageNos , headingsArray ) , opinion );
 }
 
 module.exports = { generateHTMLText };
