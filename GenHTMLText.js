@@ -2,6 +2,9 @@ const fs = require('fs');
 const path = require( 'path' );
 const helper = require('./helper');
 
+const ToC_constString = 'Inhaltsverzeichnis';
+const AbbreviationsPage_constString = 'Abkürzungsverzeichnis';
+
 const GetFirstPage = () => {
     let pathFile = path.join( __dirname , 'Files' , 'page1.html' );
     let pagedata = fs.readFileSync( pathFile , 'utf-8' );
@@ -111,13 +114,6 @@ const GetSecondPage = ( opinion ) => {
     // Sachverständige.
     pagedata = pagedata.replace( /\{\{expertno1\}\}/ , GetExpert( opinion.expert1 ) );
     pagedata = pagedata.replace( /\{\{expertno2\}\}/ , GetExpert( opinion.expert2 ) );
-    
-    /*if ( !helper.EmptyString( help ) )
-        help = `<ul class="part">${help}</ul>`;*/
-    /*if ( opinion.expert1 != null )
-        pagedata = pagedata.replace( '{{expertno1}}' , opinion.expert1.firstName + ' ' + opinion.expert1.lastName );
-    if ( opinion.expert2 != null )
-        pagedata = pagedata.replace( '{{expertno2}}' , opinion.expert2.firstName + ' ' + opinion.expert2.lastName );*/
 
     return pagedata;
 }
@@ -125,8 +121,6 @@ const GetSecondPage = ( opinion ) => {
 const GetAbbreviationsPage = () => {
     let pathFile = path.join( __dirname , 'Files' , 'page_abbreviations.html' );
     let pagedata = fs.readFileSync( pathFile , 'utf-8' );
-    //let pagedata = fs.readFileSync( './Files/page1.html' , 'utf-8' );
-    //pagedata = pagedata.replace( /\{\{opinionNo\}\}/g , opinion.opinionNo );
 
     return pagedata;
 }
@@ -134,6 +128,7 @@ const GetAbbreviationsPage = () => {
 const FilterOpDetailsLayerA = ( opDetail ) => {
     return ( opDetail
       && !opDetail.deleted
+      && !opDetail.finallyRemoved
       && helper.EmptyString( opDetail.refParentDetail ) );
       //&& opDetail.type == 'HEADING' );// Wird hier nicht geprüft, ansonsten würden LayerA Details von jedem anderen type nie angezeigt!
 }
@@ -157,8 +152,7 @@ const GetPageClass = ( opDetail ) => {
 
 const GetHeadingRegExp = ( ToCPoint ) => {
     return {
-        //name: `^${ToCPoint}`,
-        name: `${ToCPoint}`,
+        name: ToCPoint,
         page: ''
     };
 }
@@ -187,6 +181,7 @@ const GetChildrenToc = ( opDetails , parentID , chapter , print , ToCPageNos , w
     let detailArray = opDetails.filter( opDetail => {
         return ( opDetail
                 && !opDetail.deleted
+                && !opDetail.finallyRemoved
                 && opDetail.refParentDetail == parentID
                 //&& opDetail.type == 'HEADING' );
                 && opDetail.showInToC
@@ -196,7 +191,7 @@ const GetChildrenToc = ( opDetails , parentID , chapter , print , ToCPageNos , w
         return '';        
 
     detailArray.forEach( currentDetailValue => {
-        text += `<div class="toc_Point">`;
+        text += '<div class="toc_Point">';
 
         /*if ( !helper.EmptyString( currentDetailValue.printTitle ) )
             title = currentDetailValue.printTitle;
@@ -214,20 +209,22 @@ const GetChildrenToc = ( opDetails , parentID , chapter , print , ToCPageNos , w
             if ( print )
                 text += `<span class="${GetToCItemDepth( chapter + '.' + subChapterNo )}"><b>${chapter}.${subChapterNo} ${currentDetailValue.printTitle}</b></span>`;
             else
-                text += `<span class="${GetToCItemDepth( chapter + '.' + subChapterNo )}"><b>${chapter}.${subChapterNo} <a href="#${helper.GetID( chapter + '.' + subChapterNo )}">${currentDetailValue.printTitle}</a></b></span>`;
-            text += `<span class="dots"></span>
-                     <span class="pageNo">${pageNo}</span>`;
+                //text += `<span class="${GetToCItemDepth( chapter + '.' + subChapterNo )}"><b>${chapter}.${subChapterNo} <a href="#${helper.GetID( chapter + '.' + subChapterNo )}">${currentDetailValue.printTitle}</a></b></span>`;
+                text += `<span class="${GetToCItemDepth( chapter + '.' + subChapterNo )}"><b>${chapter}.${subChapterNo} <a href="#${currentDetailValue._id}">${currentDetailValue.printTitle}</a></b></span>`;
+            text += '<span class="dots"></span>';
+            text += `<span class="pageNo">${pageNo}</span>`;
         }
         else {
             if ( print )
                 text += `<span class="${GetToCItemDepth( chapter + '.' + subChapterNo )}"><b>${chapter}.${subChapterNo} ${currentDetailValue.printTitle}</b></span>`;
             else
-                text += `<span class="${GetToCItemDepth( chapter + '.' + subChapterNo )}"><b>${chapter}.${subChapterNo} <a href="#${helper.GetID( chapter + '.' + subChapterNo )}">${currentDetailValue.printTitle}</a></b></span>`;
+                //text += `<span class="${GetToCItemDepth( chapter + '.' + subChapterNo )}"><b>${chapter}.${subChapterNo} <a href="#${helper.GetID( chapter + '.' + subChapterNo )}">${currentDetailValue.printTitle}</a></b></span>`;
+                text += `<span class="${GetToCItemDepth( chapter + '.' + subChapterNo )}"><b>${chapter}.${subChapterNo} <a href="#${currentDetailValue._id}">${currentDetailValue.printTitle}</a></b></span>`;
         }
         if ( writePageNoToArray )
             headingsArray.push( GetHeadingRegExp( `${chapter}.${subChapterNo} ${currentDetailValue.printTitle}` ) );
 
-        text += `</div>`;
+        text += '</div>';
         text += GetChildrenToc( opDetails , currentDetailValue._id , `${chapter}.${subChapterNo}` , print , ToCPageNos , writePageNoToArray , headingsArray );
         subChapterNo += 1;
     });
@@ -241,19 +238,26 @@ const GetChildren = ( opDetails , parentID , chapter ) => {
     let detailArray = opDetails.filter( opDetail => {
         return ( opDetail
               && !opDetail.deleted
+              && !opDetail.finallyRemoved
               && opDetail.refParentDetail == parentID );
     });
     if ( detailArray.length == 0 )
         return ''; 
 
     detailArray.forEach( currentDetailValue => {
-        text += `<div class="${GetPageClass( currentDetailValue )}">`;  
-        text += helper.GetFormatText( currentDetailValue , `${chapter}.${subChapterNo}` , 'B' );    
-        text += `</div>`;  
+        text += `<div class="${GetPageClass( currentDetailValue )}">`;
+        if ( !helper.EmptyString( currentDetailValue.htmlContent ) )
+            text += currentDetailValue.htmlContent.replace( /\{\{Xposition\}\}/ , `${chapter}.${subChapterNo}` );
+        else
+            //text += helper.GetFormatText( currentDetailValue , `${chapter}.${subChapterNo}` , 'B' );
+            text += helper.GetFormatText2( currentDetailValue , 'B' )
+            .replace( /\{\{Xposition\}\}/ , `${chapter}.${subChapterNo}` )
+            .replace( /\{\{XparentPosition\}\}/ , '' );
+        text += '</div>';
         text += GetChildren( opDetails , currentDetailValue._id , `${chapter}.${subChapterNo}` );
         //if ( currentDetailValue.type == 'HEADING' )
-        /*if ( currentDetailValue.showInToC
-          && !helper.EmptyString( currentDetailValue.printTitle ) )*/
+        if ( currentDetailValue.showInToC
+          && !helper.EmptyString( currentDetailValue.printTitle ) )
             subChapterNo += 1;
     });
     return text;
@@ -270,8 +274,8 @@ const GetDynContent = ( opinionDetails , hasAbbreviationsPage , hasToC , print ,
     opinionDetails.sort( helper.opinionDetailsSortASC );   
     const opDetailLayerA = opinionDetails.filter( FilterOpDetailsLayerA );
     if ( hasToC ) {
-        text += `<div class="page-Breaks">
-                    <h2 class="ueb2">Inhaltsverzeichnis</h2>`;
+        text += '<div class="page-Breaks">';
+        text += `<h2 class="ueb2">${ToC_constString}</h2>`;
                     //<p><b>Inhaltsverzeichnis</b></p>`;
         //////////////
         // Test zum Einfügen eines Bildes.
@@ -295,40 +299,39 @@ const GetDynContent = ( opinionDetails , hasAbbreviationsPage , hasToC , print ,
         text += header_image;*/
         //////////////
         let writePageNoToArray = false;//Variable, ob Seitennummern in Array geschrieben werden sollen = nur für 1. temporären Durchgang.
-        const abbreviationsPage = 'Abkürzungsverzeichnis';
         if ( ToCPageNos
           && ( !headingsArray
             || headingsArray.length == 0 ) ) {
             if ( hasAbbreviationsPage )
-                headingsArray.push( GetHeadingRegExp( abbreviationsPage ) );
+                headingsArray.push( GetHeadingRegExp( AbbreviationsPage_constString ) );
             writePageNoToArray = true;
         }
         if ( hasAbbreviationsPage ) {
             // Abkürzungsverzeichnis im Inhaltsverzeichnis.
-            text += `<div class="toc_Point">`;
+            text += '<div class="toc_Point">';
             let pageNo = '';
             if ( ToCPageNos
               && !writePageNoToArray ) {
                 // Seitennummern ins Inhaltsverzeichnis schreiben.
                 let pageNoElement = headingsArray.find( (element) => {
-                    return ( element.name == abbreviationsPage );
+                    return ( element.name == AbbreviationsPage_constString );
                 });
                 if ( pageNoElement )
                     pageNo = pageNoElement.page;
                 if ( print )
-                    text += `<span class="item"><b>${abbreviationsPage}</b></span>`;
+                    text += `<span class="item"><b>${AbbreviationsPage_constString}</b></span>`;
                 else
-                    text += `<span class="item"><b><a href="#0">${abbreviationsPage}</a></b></span>`;
-                text += `<span class="dots"></span>
-                         <span class="pageNo">${pageNo}</span>`;
+                    text += `<span class="item"><b><a href="#0">${AbbreviationsPage_constString}</a></b></span>`;
+                text += '<span class="dots"></span>';
+                text += `<span class="pageNo">${pageNo}</span>`;
             }
             else {
                 if ( print )
-                    text += `<span class="item"><b>${abbreviationsPage}</b></span>`;
+                    text += `<span class="item"><b>${AbbreviationsPage_constString}</b></span>`;
                 else
-                    text += `<span class="item"><b><a href="#0">${abbreviationsPage}</a></b></span>`;
+                    text += `<span class="item"><b><a href="#0">${AbbreviationsPage_constString}</a></b></span>`;
             }
-            text += `</div>`;
+            text += '</div>';
         }
 
         // 1. Durchgang für Inhaltsverzeichnis.
@@ -337,7 +340,7 @@ const GetDynContent = ( opinionDetails , hasAbbreviationsPage , hasToC , print ,
             // Prüfung nach Kriterien showInToC = true und printTitle nicht leer.
             if ( currentDetail.showInToC
               && !helper.EmptyString( currentDetail.printTitle ) ) {
-                text += `<div class="toc_Point">`;
+                text += '<div class="toc_Point">';
                 
                 /*if ( !helper.EmptyString( currentDetail.printTitle ) )
                     title = currentDetail.printTitle;
@@ -355,26 +358,28 @@ const GetDynContent = ( opinionDetails , hasAbbreviationsPage , hasToC , print ,
                     if ( print )
                         text += `<span class="${GetToCItemDepth( chapterNo )}"><b>${chapterNo}. ${currentDetail.printTitle}</b></span>`;
                     else
-                        text += `<span class="${GetToCItemDepth( chapterNo )}"><b>${chapterNo}. <a href="#${chapterNo}">${currentDetail.printTitle}</a></b></span>`;
-                    text += `<span class="dots"></span>
-                             <span class="pageNo">${pageNo}</span>`;
+                        //text += `<span class="${GetToCItemDepth( chapterNo )}"><b>${chapterNo}. <a href="#${chapterNo}">${currentDetail.printTitle}</a></b></span>`;
+                        text += `<span class="${GetToCItemDepth( chapterNo )}"><b>${chapterNo}. <a href="#${currentDetail._id}">${currentDetail.printTitle}</a></b></span>`;
+                    text += '<span class="dots"></span>';
+                    text += `<span class="pageNo">${pageNo}</span>`;
                 }
                 else {
                     if ( print )
                         text += `<span class="${GetToCItemDepth( chapterNo )}"><b>${chapterNo}. ${currentDetail.printTitle}</b></span>`;
                     else
-                        text += `<span class="${GetToCItemDepth( chapterNo )}"><b>${chapterNo}. <a href="#${chapterNo}">${currentDetail.printTitle}</a></b></span>`;
+                        //text += `<span class="${GetToCItemDepth( chapterNo )}"><b>${chapterNo}. <a href="#${chapterNo}">${currentDetail.printTitle}</a></b></span>`;
+                        text += `<span class="${GetToCItemDepth( chapterNo )}"><b>${chapterNo}. <a href="#${currentDetail._id}">${currentDetail.printTitle}</a></b></span>`;
                 }
                 if ( writePageNoToArray )
                     headingsArray.push( GetHeadingRegExp( `${chapterNo}. ${currentDetail.printTitle}` ) );
 
-                text += `</div>`;
+                text += '</div>';
                 // Weitere OpinionDetails zu diesem OpinionDetail.
                 text += GetChildrenToc( opinionDetails , currentDetail._id , chapterNo , print , ToCPageNos , writePageNoToArray , headingsArray );
                 chapterNo += 1;
             }
         });
-        text += `</div>`;
+        text += '</div>';
     }
 
     // Abkürzungsverzeichnis.
@@ -385,12 +390,16 @@ const GetDynContent = ( opinionDetails , hasAbbreviationsPage , hasToC , print ,
     // 2. Durchgang für Inhalt: Einzelne Kapitel.
     chapterNo = 1;
     opDetailLayerA.forEach( currentDetail => {
-        //text += `<div class="page">`;
         text += `<div class="${GetPageClass( currentDetail )}">`;
-        text += helper.GetFormatText( currentDetail , chapterNo , 'A' );        
-        text += `</div>`;
+        if ( !helper.EmptyString( currentDetail.htmlContent ) )
+            text += currentDetail.htmlContent.replace( /\{\{Xposition\}\}/ , chapterNo );
+        else
+            //text += helper.GetFormatText( currentDetail , chapterNo , 'A' );
+            text += helper.GetFormatText2( currentDetail , 'A' )
+            .replace( /\{\{Xposition\}\}/ , chapterNo )
+            .replace( /\{\{XparentPosition\}\}/ , '' );
+        text += '</div>';
         // Weitere OpinionDetails zu diesem OpinionDetail.
-        // Auskommentiert nur für Tests:
         text += GetChildren( opinionDetails , currentDetail._id , chapterNo );
         
         chapterNo += 1;
@@ -403,12 +412,20 @@ const GetBody = ( opinion, opinionDetails , hasAbbreviationsPage , hasToC , prin
          + GetFirstPage()
          + GetSecondPage( opinion )
          + GetDynContent( opinionDetails , hasAbbreviationsPage , hasToC , print , ToCPageNos , headingsArray )
-         //+ GetFinalPage( opinion )
          + '</body>';
 }
 
+/*const escapeRegExp = ( rexp ) => {
+    return rexp.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
+}*/
+
 const ReplaceOpinionVariables = ( htmlText , opinion ) => {
-    //...
+    if ( opinion.userVariables
+      && opinion.userVariables.length > 0 ) {
+        opinion.userVariables.forEach( element => {
+            htmlText = htmlText.replace( new RegExp( '\{\{' + helper.escapeRegExp( element.name ) + '\}\}' , 'g' ) , element.value );
+        });
+    }
     return htmlText;
 }
 

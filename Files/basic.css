@@ -152,7 +152,7 @@ ul.part {
     padding-left: 224px
 }
 
-div.question {
+/*div.question {
     font-size: 10pt;
     //width: 100%;
     width: 17.8cm;
@@ -190,4 +190,38 @@ div.recommendation {
     display: inline-block;
     margin-top: 0px;
     margin-bottom: 0px;
+}*/
+
+mbac-item-type-heading {}
+.mbac-title {
+    font-weight: bold;
+    margin-top: 8px;
+    margin-bottom: 8px;
+    font-size: 20pt;//14
 }
+
+.mbac-text {
+    margin-top: 8px;
+    margin-bottom: 8px;
+}
+
+.mbac-child-content {
+    visibility: hidden;
+}
+
+/*mbac-item-type-heading depth-0 > .mbac-title {
+    font-weight: bold;
+    margin-top: 8px;
+    margin-bottom: 8px;
+    font-size: 20pt;//14
+}*/
+
+/*mbac-item-type-heading depth-1 > .mbac-title {
+    font-size: 8pt;
+}
+
+mbac-item-type-heading > .mbac-title {
+    font-weight: bold;
+    margin-top: 8px;
+    margin-bottom: 8px;
+}*/

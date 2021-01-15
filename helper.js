@@ -1,3 +1,4 @@
+const layoutTypes = require('./constData/layouttypes');
 
 const EmptyString = ( stringToCheck ) => {
     if ( !stringToCheck
@@ -72,8 +73,12 @@ const opinionDetailsSortASC = ( opinionDetailA , opinionDetailB ) => {
     return value1 - value2;
 }
 
-const GetID = ( chapter ) => {
+/*const GetID = ( chapter ) => {
   return String( chapter ).replace( /\./g , '-' );
+}*/
+
+const GetFormatText2 = ( opDetail , layer ) => {
+  return layoutTypes.renderTemplate( opDetail /*, 1*/ );
 }
 
 const GetFormatText = ( opDetail , chapterNo , layer ) => {
@@ -86,12 +91,14 @@ const GetFormatText = ( opDetail , chapterNo , layer ) => {
     && !EmptyString( opDetail.printTitle ) ) {
     if ( layer == 'A' )
       // Auf 1. Ebene (=Layer A) immer h2.
-      text += `<h2 class="ueb2" id="${GetID( chapterNo )}">${chapterNo}. ${opDetail.printTitle}</h2>`;
+      //text += `<h2 class="ueb2" id="${GetID( chapterNo )}">${chapterNo}. ${opDetail.printTitle}</h2>`;
+      text += `<h2 class="ueb2" id="${opDetail._id}">${chapterNo}. ${opDetail.printTitle}</h2>`;
     else if ( opDetail.type == 'QUESTION'
             || opDetail.type == 'ANSWER'
             || opDetail.type == 'RECOMMENDATION' ) {}// wird unten gesetzt.
     else
-      text += `<h2 class="ueb3" id="${GetID( chapterNo )}">${chapterNo} ${opDetail.printTitle}</h2>`;
+      //text += `<h2 class="ueb3" id="${GetID( chapterNo )}">${chapterNo} ${opDetail.printTitle}</h2>`;
+      text += `<h2 class="ueb3" id="${opDetail._id}">${chapterNo} ${opDetail.printTitle}</h2>`;
   }
   else if ( !EmptyString( opDetail.printTitle ) ) {
     if ( opDetail.type == 'QUESTION'
@@ -112,7 +119,7 @@ const GetFormatText = ( opDetail , chapterNo , layer ) => {
     // formatText...
   }
   else if ( opDetail.type == 'QUESTION' ) {
-    text += `<div class="question">`;
+    text += '<div class="question">';
     if ( opDetail.showInToC
       && !EmptyString( opDetail.printTitle ) ) {
       text += `<p id="${GetID( chapterNo )}"><b>${chapterNo}. ${opDetail.printTitle}</b></p>`;
@@ -122,42 +129,44 @@ const GetFormatText = ( opDetail , chapterNo , layer ) => {
     }
     if ( !EmptyString( formatText ) )
       text += `<p>${formatText}</p>`;
-    text += `</div>`;
+    text += '</div>';
     formatText = '';
   }
   else if ( opDetail.type == 'ANSWER' ) {
-    text += `<div class="answer">`;
+    text += '<div class="answer">';
     if ( opDetail.showInToC
       && !EmptyString( opDetail.printTitle ) ) {
-      text += `<p id="${GetID( chapterNo )}"><b>${chapterNo}. ${opDetail.printTitle}</b></p>`;
+      //text += `<p id="${GetID( chapterNo )}"><b>${chapterNo}. ${opDetail.printTitle}</b></p>`;
+      text += `<p id="${opDetail._id}"><b>${chapterNo}. ${opDetail.printTitle}</b></p>`;
     }
     else if ( !EmptyString( opDetail.printTitle ) ) {
       text += `<p><b>${opDetail.printTitle}</b></p>`;
     }
     if ( !EmptyString( formatText ) ) {
-      text += `<p><u>Antwort/Ist-Zustand</u></p>`;
+      text += '<p><u>Antwort/Ist-Zustand</u></p>';
       text += `<p>${formatText}</p>`;
     }
-    text += `</div>`;
+    text += '</div>';
     formatText = '';
   }
   else if ( opDetail.type == 'DEFINITION' ) {
     // formatText...
   }
   else if ( opDetail.type == 'RECOMMENDATION' ) {
-    text += `<div class="recommendation">`;
+    text += '<div class="recommendation">';
     if ( opDetail.showInToC
       && !EmptyString( opDetail.printTitle ) ) {
-      text += `<p id="${GetID( chapterNo )}"><b>${chapterNo}. ${opDetail.printTitle}</b></p>`;
+      //text += `<p id="${GetID( chapterNo )}"><b>${chapterNo}. ${opDetail.printTitle}</b></p>`;
+      text += `<p id="${opDetail._id}"><b>${chapterNo}. ${opDetail.printTitle}</b></p>`;
     }
     else if ( !EmptyString( opDetail.printTitle ) ) {
       text += `<p><b>${opDetail.printTitle}</b></p>`;
     }
     if ( !EmptyString( formatText ) ) {
-      text += `<p><u>Handlungsempfehlung</u></p>`;
+      text += '<p><u>Handlungsempfehlung</u></p>';
       text += `<p>${formatText}</p>`;
     }
-    text += `</div>`;
+    text += '</div>';
     formatText = '';
   }
   else if ( opDetail.type == 'IMPORTANT' ) {
@@ -181,4 +190,8 @@ const GetFormatText = ( opDetail , chapterNo , layer ) => {
   return text;
 };
 
-module.exports = { EmptyString , GetTodayDateString , opinionDetailsSortASC , GetFormatText , GetID };
+const escapeRegExp = ( rexp ) => {
+  return rexp.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
+}
+
+module.exports = { EmptyString , GetTodayDateString , opinionDetailsSortASC , GetFormatText , GetFormatText2 , escapeRegExp };

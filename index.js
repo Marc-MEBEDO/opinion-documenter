@@ -120,9 +120,9 @@ const createPDFFile_html5_to_pdf = async ( iPathFile , iHTMLText , tmp = false )
     })
 }
 
-function escapeRegExp( rexp ) {
+/*const escapeRegExp = ( rexp ) => {
     return rexp.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
-}
+}*/
 
 const readPDF_parse = async ( arrHead ) => {
     return new Promise( ( then_ , catch_ ) => {
@@ -162,7 +162,7 @@ const SetPages = ( arrHead , text ) => {
     // Zunächst alle Zeilenumbrüche löschen.
     text = text.replace( /\n/g , '' );
     // Dann den Text so kürzen, dass erst der Text nach dem Inhaltsverzeichnis enthalten ist. Ansonsten würden im match die Einträge im Inhaltsverzeichnis gefunden.
-    let exp = new RegExp( escapeRegExp( arrHead[ arrHead.length - 1 ].name ) + '.*?Seite .*? von' );//, 'g' );
+    let exp = new RegExp( helper.escapeRegExp( arrHead[ arrHead.length - 1 ].name ) + '.*?Seite .*? von' );//, 'g' );
     let index = text.search( exp );
     if ( index == -1 )
         return;
@@ -172,7 +172,7 @@ const SetPages = ( arrHead , text ) => {
     text = text.slice( index + arrHead[ arrHead.length - 1 ].name.length );
     let match = '';
     arrHead.forEach( ( element ) => {
-        exp = new RegExp( escapeRegExp( element.name ) + '.*?Seite (.*?) von' );//, 'g' );
+        exp = new RegExp( helper.escapeRegExp( element.name ) + '.*?Seite (.*?) von' );//, 'g' );
         match = text.match( exp );
         if ( match
           && match.length > 1 ) {
