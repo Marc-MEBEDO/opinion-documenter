@@ -246,13 +246,17 @@ const GetChildren = ( opDetails , parentID , chapter ) => {
 
     detailArray.forEach( currentDetailValue => {
         text += `<div class="${GetPageClass( currentDetailValue )}">`;
-        if ( !helper.EmptyString( currentDetailValue.htmlContent ) )
-            text += currentDetailValue.htmlContent.replace( /\{\{Xposition\}\}/ , `${chapter}.${subChapterNo}` );
-        else
+        if ( !helper.EmptyString( currentDetailValue.htmlContent ) ) {
+            text += currentDetailValue.htmlContent
+            .replace( /\{\{XparentPosition\}\}/ , `${chapter}.` )
+            .replace( /\{\{Xposition\}\}/ , `${subChapterNo}` );
+        }
+        else {
             //text += helper.GetFormatText( currentDetailValue , `${chapter}.${subChapterNo}` , 'B' );
             text += helper.GetFormatText2( currentDetailValue , 'B' )
-            .replace( /\{\{Xposition\}\}/ , `${chapter}.${subChapterNo}` )
-            .replace( /\{\{XparentPosition\}\}/ , '' );
+            .replace( /\{\{XparentPosition\}\}/ , `${chapter}.` )
+            .replace( /\{\{Xposition\}\}/ , `${subChapterNo}` );
+        }
         text += '</div>';
         text += GetChildren( opDetails , currentDetailValue._id , `${chapter}.${subChapterNo}` );
         //if ( currentDetailValue.type == 'HEADING' )
@@ -391,13 +395,17 @@ const GetDynContent = ( opinionDetails , hasAbbreviationsPage , hasToC , print ,
     chapterNo = 1;
     opDetailLayerA.forEach( currentDetail => {
         text += `<div class="${GetPageClass( currentDetail )}">`;
-        if ( !helper.EmptyString( currentDetail.htmlContent ) )
-            text += currentDetail.htmlContent.replace( /\{\{Xposition\}\}/ , chapterNo );
-        else
+        if ( !helper.EmptyString( currentDetail.htmlContent ) ) {
+            text += currentDetail.htmlContent
+            .replace( /\{\{XparentPosition\}\}/ , '' )
+            .replace( /\{\{Xposition\}\}/ , `${chapterNo}.` );
+        }
+        else {
             //text += helper.GetFormatText( currentDetail , chapterNo , 'A' );
             text += helper.GetFormatText2( currentDetail , 'A' )
-            .replace( /\{\{Xposition\}\}/ , chapterNo )
-            .replace( /\{\{XparentPosition\}\}/ , '' );
+            .replace( /\{\{XparentPosition\}\}/ , '' )
+            .replace( /\{\{Xposition\}\}/ , `${chapterNo}.` );
+        }
         text += '</div>';
         // Weitere OpinionDetails zu diesem OpinionDetail.
         text += GetChildren( opinionDetails , currentDetail._id , chapterNo );
