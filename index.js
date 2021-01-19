@@ -227,15 +227,16 @@ const pdfCreate = async ( opinion , opinionDetails , pathFile , hasAbbreviations
         let genHTMLText = require( './GenHTMLText' );
         // Zunächst den HTML Text generieren.
         let headingsArray = [];
-        htmlText = genHTMLText.generateHTMLText( opinion , opinionDetails , hasAbbreviationsPage , hasToC , print , ToCPageNos , headingsArray );
-        // HTML Datei schreiben für 'html5-to-pdf'.
-        //createHTMLFile( htmlText );
         if ( hasToC && ToCPageNos ) {
             // Mit Inhaltverzeichnis und Seitenzahlen.
-            // Dafür muss PDF temporär geschrieben, eingelesen und dann final mit den zuvor ermittelten Seitenzahlen neu geschrieben werden.
-            // PDF temporär schreiben.
-            await createPDFFile_html5_to_pdf( pathFile , htmlText , true );
             try {
+                htmlText = genHTMLText.generateHTMLText( opinion , opinionDetails , hasAbbreviationsPage , hasToC , print , ToCPageNos , headingsArray , true );
+                // HTML Datei schreiben für 'html5-to-pdf'.
+                //createHTMLFile( htmlText );
+
+                // Dafür muss PDF temporär geschrieben, eingelesen und dann final mit den zuvor ermittelten Seitenzahlen neu geschrieben werden.
+                // PDF temporär schreiben.
+                await createPDFFile_html5_to_pdf( pathFile , htmlText , true );
                 // PDF lesen und Seitenzahlen ermitteln.
                 let result = await readPDF_parse( headingsArray );
                 SetPages( headingsArray , result );
@@ -253,6 +254,9 @@ const pdfCreate = async ( opinion , opinionDetails , pathFile , hasAbbreviations
         }
         else {
             try {
+                htmlText = genHTMLText.generateHTMLText( opinion , opinionDetails , hasAbbreviationsPage , hasToC , print , ToCPageNos , headingsArray );
+                // HTML Datei schreiben für 'html5-to-pdf'.
+                //createHTMLFile( htmlText );
                 // PDF Datei schreiben mit 'html5-to-pdf'.
                 await createPDFFile_html5_to_pdf( pathFile , htmlText );
             }

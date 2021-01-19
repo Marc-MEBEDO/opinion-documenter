@@ -21,6 +21,22 @@ const GetTodayDateString = () => {
 }
 
 const opinionDetailsSortASC = ( opinionDetailA , opinionDetailB ) => {
+  // Mit "parentPosition" und "position":
+  // Funktion zur Sortierung der Gutachten-Details.
+  let pValue1 = opinionDetailA.parentPosition;
+  let pValue2 = opinionDetailB.parentPosition;
+
+  if ( !EmptyString( pValue1 )
+    && !EmptyString( pValue2 ) ) {
+    if ( pValue2 > pValue1 )
+      return 1;
+  }
+
+  return opinionDetailA.position - opinionDetailB.position;
+}
+
+/*const opinionDetailsSortASC = ( opinionDetailA , opinionDetailB ) => {
+  // Mit "OrderString":
   // Funktion zur Sortierung der Gutachten-Details.
   let value1 = opinionDetailA.orderString.trim();
   let value1b = '';
@@ -71,14 +87,17 @@ const opinionDetailsSortASC = ( opinionDetailA , opinionDetailB ) => {
     return value1b - value2b;
   else
     return value1 - value2;
-}
+}*/
 
 /*const GetID = ( chapter ) => {
   return String( chapter ).replace( /\./g , '-' );
 }*/
 
 const GetFormatText2 = ( opDetail , layer ) => {
-  return layoutTypes.renderTemplate( opDetail /*, 1*/ );
+  let depth = 0;
+  if ( layer != 'A' )
+    depth = 1;
+  return layoutTypes.renderTemplate( opDetail , depth );
 }
 
 const GetFormatText = ( opDetail , chapterNo , layer ) => {

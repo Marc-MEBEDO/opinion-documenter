@@ -9,8 +9,8 @@ const LayouttypesObject = {
         template: `
             <div id="{{_id}}" class="mbac-item-type-heading depth-{{depth}}">
                 <div class="mbac-title">
-                    <span class="mbac-position media-print">{{XparentPosition}}{{Xposition}}</span>
-                    <span class="mbac-position media-screen">{{parentPosition}}{{position}}</span>
+                    <span class="mbac-position mbac-media-print">{{XparentPosition}}{{Xposition}}</span>
+                    <span class="mbac-position mbac-media-screen">{{parentPosition}}{{position}}</span>
                     <span>{{printTitle}}</span>
                 </div>
                 <div class="mbac-text">
