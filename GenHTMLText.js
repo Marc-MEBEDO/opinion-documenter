@@ -235,6 +235,14 @@ const GetChildrenToc = ( opDetails , parentID , chapter , print , ToCPageNos , w
     return text;
 }
 
+const CanHaveChildren = ( opDetail ) => {
+    if ( opDetail.type == 'HEADING'
+      || opDetail.type == 'QUESTION' )
+        return true;
+    else
+        return false;
+}
+
 const GetChildren = ( opDetails , parentID , chapter , tmp ) => {
     // "Holt" alle Children zum übergebenen Gutachten-Detail (=parentID).
     let text = '';
@@ -249,6 +257,7 @@ const GetChildren = ( opDetails , parentID , chapter , tmp ) => {
         return ''; 
 
     let htmlContent;
+    let canHaveChildren = false;
     detailArray.forEach( currentDetailValue => {
         if ( currentDetailValue.type == 'PAGEBREAK' ) {
             if ( !currentDetailValue.deleted
@@ -256,6 +265,7 @@ const GetChildren = ( opDetails , parentID , chapter , tmp ) => {
                 text += '<div class="page-breaks" />';
         }
         else {
+            canHaveChildren = CanHaveChildren( currentDetailValue );
             //text += `<div class="${GetPageClass( currentDetailValue )}">`;
             text += '<div>';
             if ( !helper.EmptyString( currentDetailValue.htmlContent ) ) {
@@ -264,6 +274,8 @@ const GetChildren = ( opDetails , parentID , chapter , tmp ) => {
                 .replace( /\{\{Xposition\}\}/ , `${subChapterNo}` );
                 if ( tmp && currentDetailValue.printTitle )
                     htmlContent = htmlContent.replace( new RegExp( helper.escapeRegExp( currentDetailValue.printTitle ) ) , currentDetailValue._id );
+                if ( canHaveChildren )
+                    htmlContent = htmlContent.replace( /\{\{childContent\}\}/ , GetChildren( opDetails , currentDetailValue._id , `${chapter}.${subChapterNo}` , tmp ) );
                 text += htmlContent;
             }
             else {
@@ -273,7 +285,9 @@ const GetChildren = ( opDetails , parentID , chapter , tmp ) => {
                 .replace( /\{\{Xposition\}\}/ , `${subChapterNo}` );
             }
             text += '</div>';
-            text += GetChildren( opDetails , currentDetailValue._id , `${chapter}.${subChapterNo}` );
+            // Weitere OpinionDetails zu diesem OpinionDetail.
+            if ( !canHaveChildren )
+                text += GetChildren( opDetails , currentDetailValue._id , `${chapter}.${subChapterNo}` , tmp );
             //if ( currentDetailValue.type == 'HEADING' )
             if ( currentDetailValue.showInToC
             && !helper.EmptyString( currentDetailValue.printTitle ) )
@@ -413,6 +427,7 @@ const GetDynContent = ( opinionDetails , hasAbbreviationsPage , hasToC , print ,
     // 2. Durchgang für Inhalt: Einzelne Kapitel.
     chapterNo = 1;
     let htmlContent;
+    let canHaveChildren = false;
     opDetailLayerA.forEach( currentDetail => {
         if ( currentDetail.type == 'PAGEBREAK' ) {
             if ( !currentDetail.deleted
@@ -420,6 +435,7 @@ const GetDynContent = ( opinionDetails , hasAbbreviationsPage , hasToC , print ,
                 text += '<div class="page-breaks" />';
         }
         else {
+            canHaveChildren = CanHaveChildren( currentDetail );
             //text += `<div class="${GetPageClass( currentDetail )}">`;
             text += '<div>'
             if ( !helper.EmptyString( currentDetail.htmlContent ) ) {
@@ -428,6 +444,8 @@ const GetDynContent = ( opinionDetails , hasAbbreviationsPage , hasToC , print ,
                 .replace( /\{\{Xposition\}\}/ , `${chapterNo}.` );
                 if ( tmp && currentDetail.printTitle )
                     htmlContent = htmlContent.replace( new RegExp( helper.escapeRegExp( currentDetail.printTitle ) ) , currentDetail._id );
+                if ( canHaveChildren )
+                    htmlContent = htmlContent.replace( /\{\{childContent\}\}/ , GetChildren( opinionDetails , currentDetail._id , chapterNo , tmp ) );
                 text += htmlContent;
             }
             else {
@@ -438,7 +456,8 @@ const GetDynContent = ( opinionDetails , hasAbbreviationsPage , hasToC , print ,
             }
             text += '</div>';
             // Weitere OpinionDetails zu diesem OpinionDetail.
-            text += GetChildren( opinionDetails , currentDetail._id , chapterNo , tmp );
+            if ( !canHaveChildren )
+                text += GetChildren( opinionDetails , currentDetail._id , chapterNo , tmp );
             
             chapterNo += 1;
         }
