@@ -8,11 +8,12 @@ h1, h2, h3, h4 {
 }
 /*p {
     line-height: 115%;
-}
+}*/
+
 p.normal {
     margin: 0cm;
     line-height: 115%;
-}*/
+}
 
 /*div {
     font-family: Arial;
@@ -312,55 +313,46 @@ div.recommendation {
     /*display: none;*/
 }
 
-.mbac-item-type-hint > .mbac-fix-title {
-    padding-top: 1em;
-    font-weight: bold;
-    /*float: left;*/
-    margin-right: 1em;
-}
-
-.mbac-item-type-hint > .mbac-print-title {
-    
-}
-
-.mbac-item-type-question .mbac-item-type-hint {
-    border-bottom: 1px solid;
-    padding-left: 1.5em;
-    padding-right: 1em;
-}
-
 .mbac-item-type-question .mbac-text {
     padding-top: 1em;
 }
 
-.mbac-item-type-question .mbac-item-type-info {
-    border-bottom: 1px solid;
-    padding-left: 1.5em;
-    padding-right: 1em;
-}
-
-.mbac-item-type-info > .mbac-fix-title {
+.mbac-item-type-hint > .mbac-fix-title,
+.mbac-item-type-info > .mbac-fix-title,
+.mbac-item-type-recommendation > .mbac-fix-title,
+.mbac-item-type-remark > .mbac-fix-title {
     padding-top: 1em;
     font-weight: bold;
     /*float: left;*/
     margin-right: 1em;
 }
 
-.mbac-item-type-info > .mbac-text {
+/*.mbac-item-type-hint > .mbac-print-title {
     
-}
+}*/
 
-.mbac-item-type-important {
-    font-style: italic;
-}
-
-.mbac-item-type-question .mbac-item-type-important {
+.mbac-item-type-question .mbac-item-type-hint,
+.mbac-item-type-question .mbac-item-type-info,
+.mbac-item-type-question .mbac-item-type-important,
+.mbac-item-type-question .mbac-item-type-recommendation,
+.mbac-item-type-question .mbac-item-type-remark {
     border-bottom: 1px solid;
+    padding-left: 1.5em;
+    padding-right: 1em;
 }
+
+/*.mbac-item-type-question .mbac-item-type-info {
+    border-bottom: 1px solid;
+    padding-left: 1.5em;
+    padding-right: 1em;
+}*/
 
 .mbac-item-type-important .mbac-fix-title {
+    padding-top: 1em;
     color: red;
+    font-style: italic;
     font-weight: bold;
+    margin-right: 1em;
 }
 
 .mbac-item-type-important .mbac-print-title {
@@ -396,7 +388,3 @@ table.mbac-item-type-bestimmungen {
 .mbac-position.mbac-media-screen {
     visibility: hidden;
 }
-
-/*.mbac-child-content {
-    visibility: hidden;
-}*/
