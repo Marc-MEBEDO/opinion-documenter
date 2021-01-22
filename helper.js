@@ -1,23 +1,33 @@
 const layoutTypes = require('./constData/layouttypes');
 
 const EmptyString = ( stringToCheck ) => {
-    if ( !stringToCheck
-      || stringToCheck == '' )
-        return true;
-    else
-        return false;
+  if ( !stringToCheck
+    || stringToCheck == '' )
+      return true;
+  else
+      return false;
 }
 
 const GetTodayDateString = () => {
   // Aktuelles Datum zurückgeben.
   let dateStr = '';
-  let moment = require( 'moment' );
   let useMomentFormat = true;
-  if ( useMomentFormat )
-      dateStr = moment().format( 'DD.MM.YYYY' );
+  if ( useMomentFormat ) {
+    let moment = require( 'moment' );
+    dateStr = moment().format( 'DD.MM.YYYY' );
+  }
   else
-      dateStr = new Date().toLocaleDateString('de-DE');
+    dateStr = new Date().toLocaleDateString('de-DE');
   return dateStr;
+}
+
+const GetPDFPathFile = ( iPath , iOpinionNo , tmp = false ) => {
+  let path = require( 'path' );
+  let pathFile = path.join( iPath , iOpinionNo );
+  if ( tmp )
+    pathFile += '.tmp';
+  pathFile += '.pdf';
+  return pathFile;
 }
 
 const opinionDetailsSortASC = ( opinionDetailA , opinionDetailB ) => {
@@ -213,4 +223,4 @@ const escapeRegExp = ( rexp ) => {
   return rexp.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
 }
 
-module.exports = { EmptyString , GetTodayDateString , opinionDetailsSortASC , GetFormatText , GetFormatText2 , escapeRegExp };
+module.exports = { EmptyString , GetTodayDateString , opinionDetailsSortASC , GetFormatText , GetFormatText2 , escapeRegExp , GetPDFPathFile };
