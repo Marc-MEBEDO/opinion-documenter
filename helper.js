@@ -21,9 +21,9 @@ const GetTodayDateString = () => {
   return dateStr;
 }
 
-const GetPDFPathFile = ( iPath , iOpinionNo , tmp = false ) => {
+const GetPDFPathFile = ( iPath , iFileName , tmp = false ) => {
   let path = require( 'path' );
-  let pathFile = path.join( iPath , iOpinionNo );
+  let pathFile = path.join( iPath , iFileName );
   if ( tmp )
     pathFile += '.tmp';
   pathFile += '.pdf';

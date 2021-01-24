@@ -10,10 +10,11 @@
 
 let lastPageNo = '';
 const helper = require('./helper');
+const fs = require( 'fs' );
 
 const createPDFFile_html5_to_pdf = async ( iPathFile , iHTMLText ) => {
     // Benötigte Dateien lesen.
-    let fs = require( 'fs' );
+    //let fs = require( 'fs' );
     let path = require( 'path' );
     let pathFile = path.join( __dirname , 'Files' , 'header_image.html' );
     let header_image = fs.readFileSync( pathFile , 'utf-8' );    
@@ -109,7 +110,7 @@ const createPDFFile_html5_to_pdf = async ( iPathFile , iHTMLText ) => {
 
 const readPDF_parse = async ( iTmpPathFile ) => {
     return new Promise( ( then_ , catch_ ) => {
-        let fs = require( 'fs' );
+        //let fs = require( 'fs' );
         let pdfreader = require( 'pdf-parse' );
         let dataBuffer = fs.readFileSync( iTmpPathFile );// !!! Hier kein: , 'utf-8' !!!
  
@@ -183,8 +184,9 @@ const ModifyArray = ( headArray ) => {
 /* Parameter:
     opinion:        Das Gutachten "Objekt".
     opinionDetails: Das Array der zum Gutachten gehörenden Gutachten-Details.
-    path:       Pfad des zu erstellenden PDF Dokuments.
-    hasAbbreviationsPage...
+    path:           Pfad, in den zu erstellendes PDF Dokument geschrieben werden soll.
+                    Der Dateiname ist immer "{opinion._id}.pdf"
+    hasAbbreviationsPage: Bool, der angibt, ob Abkürzungsvereichnis enthalten sein soll.
     hasToC:         Bool, der angibt, ob Inhaltsverzeichnis generiert werden soll.
     print:          Bool, der angibt, ob PDF für Ausdruck (=true) gedacht ist oder nicht (=false).
                     Wenn print == false (also rein für digitale Betrachtung), dann werden im Inhaltsverzeichnis Links eingefügt.
@@ -194,7 +196,6 @@ const ModifyArray = ( headArray ) => {
                     Nur relevant, wenn hasToC == true.
 */
 const pdfCreate = async ( opinion , opinionDetails , path , hasAbbreviationsPage = true , hasToC = true , print = false , ToCPageNos = true ) => {
-    let htmlText = '';
     if ( helper.EmptyString( path ) ) {
         // PDF Pfad muss angegeben sein.
         console.log( 'error: Kein Dateipfad des PDF Dokuments übergeben!\nEs erfolgt KEINE Ausgabe.' );
@@ -203,15 +204,16 @@ const pdfCreate = async ( opinion , opinionDetails , path , hasAbbreviationsPage
         // opinion darf nicht null sein. opinionDetails darf null sein, dann sind eben keine Gutachten-Details in der Ausgabe enthalten.
         console.log( 'error: Keine opinion (Gutachten) übergeben!\nEs erfolgt KEINE Ausgabe.' );
     }
-    else if ( helper.EmptyString( opinion.opinionNo ) ) {
-        // opinionNo darf nicht null oder leer sein.
-        console.log( 'error: Es ist keine gültige Gutachten Nummer im übergebenen Gutachten vorhanden!\nEs erfolgt KEINE Ausgabe.' );
+    else if ( helper.EmptyString( opinion._id ) ) {
+        // opinionId darf nicht null oder leer sein.
+        console.log( 'error: Es ist keine gültige Gutachten ID im übergebenen Gutachten vorhanden!\nEs erfolgt KEINE Ausgabe.' );
     }
     else {
+        let htmlText = '';
         let genHTMLText = require( './GenHTMLText' );
         // Zunächst den HTML Text generieren.
         let headingsArray = [];
-        const pathFile = helper.GetPDFPathFile( path , opinion.opinionNo );
+        const pathFile = helper.GetPDFPathFile( path , opinion._id );
         if ( hasToC && ToCPageNos ) {
             // Mit Inhaltverzeichnis und Seitenzahlen.
             try {
@@ -220,11 +222,17 @@ const pdfCreate = async ( opinion , opinionDetails , path , hasAbbreviationsPage
                 //createHTMLFile( htmlText );
 
                 // Dafür muss PDF temporär geschrieben, eingelesen und dann final mit den zuvor ermittelten Seitenzahlen neu geschrieben werden.
-                const tmpPathFile = helper.GetPDFPathFile( path , opinion.opinionNo , true );
+                const tmpPathFile = helper.GetPDFPathFile( path , opinion._id , true );
                 // PDF temporär schreiben.
                 await createPDFFile_html5_to_pdf( tmpPathFile , htmlText );
                 // PDF lesen und Seitenzahlen ermitteln.
                 let result = await readPDF_parse( tmpPathFile );
+                // Temporäre Datei löschen.
+                fs.unlink( tmpPathFile , ( err ) => {
+                    if ( err )
+                        throw err;
+                });
+
                 SetPages( headingsArray , result );
                 ModifyArray( headingsArray );
                 // HTML Text neu generieren mit Seitenzahlen.
@@ -233,6 +241,7 @@ const pdfCreate = async ( opinion , opinionDetails , path , hasAbbreviationsPage
                 //createHTMLFile( htmlText );
                 // PDF Datei final schreiben mit 'html5-to-pdf'.
                 await createPDFFile_html5_to_pdf( pathFile , htmlText );
+                return pathFile;
             }
             catch( err ) {
                 console.log( err );
@@ -245,16 +254,15 @@ const pdfCreate = async ( opinion , opinionDetails , path , hasAbbreviationsPage
                 //createHTMLFile( htmlText );
                 // PDF Datei schreiben mit 'html5-to-pdf'.
                 await createPDFFile_html5_to_pdf( pathFile , htmlText );
+                return pathFile;
             }
             catch( err ) {
                 console.log( err );
             }
-        }
+        }        
     }
-    return htmlText;
+    return '';
  }
-
- //npm install pdf-parse
 
  //module.exports = pdfCreate;
  module.exports = { pdfCreate };
