@@ -28,7 +28,7 @@ const createPDFFile_html5_to_pdf = async ( iPathFile , iHTMLText ) => {
         let html5ToPDF = new _HTML5ToPDF({
             inputBody: iHTMLText,
             //inputPath: path.join(__dirname , 'tmp' , 'test.html' ),
-            outputPath: iPathFile,
+            //outputPath: iPathFile,
             templatePath: path.join( __dirname , '' , 'Files' ),
             include: [
                 path.join( __dirname , 'Files' , 'basic.css' ),
@@ -97,9 +97,15 @@ const createPDFFile_html5_to_pdf = async ( iPathFile , iHTMLText ) => {
         })
     
         try {
-            await html5ToPDF.start()
-            await html5ToPDF.build()
-            await html5ToPDF.close()
+            await html5ToPDF.start();
+            let buf = await html5ToPDF.build();
+            await html5ToPDF.close();
+            if ( buf ) {
+                fs.writeFileSync( iPathFile , buf , err => {
+                    if ( err )
+                        return console.log( err );
+                });
+            }
             resolve();
         }
         catch( err ) {
