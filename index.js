@@ -101,10 +101,11 @@ const createPDFFile_html5_to_pdf = async ( iPathFile , iHTMLText ) => {
             let buf = await html5ToPDF.build();
             await html5ToPDF.close();
             if ( buf ) {
-                fs.writeFileSync( iPathFile , buf , err => {
+                fs.writeFileSync( iPathFile , buf );/* Sync-methods did not have a callback
+                , err => {
                     if ( err )
                         return console.log( err );
-                });
+                });*/
             }
             resolve();
         }
