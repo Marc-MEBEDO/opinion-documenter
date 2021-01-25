@@ -234,10 +234,12 @@ const pdfCreate = async ( opinion , opinionDetails , path , hasAbbreviationsPage
                 // PDF lesen und Seitenzahlen ermitteln.
                 let result = await readPDF_parse( tmpPathFile );
                 // Temporäre Datei löschen.
-                fs.unlink( tmpPathFile , ( err ) => {
-                    if ( err )
-                        throw err;
-                });
+                if ( fs.existsSync( tmpPathFile ) ) {
+                    fs.unlink( tmpPathFile , ( err ) => {
+                        if ( err )
+                            throw err;
+                    });
+                }
 
                 SetPages( headingsArray , result );
                 ModifyArray( headingsArray );
