@@ -345,7 +345,7 @@ const GetDynContent = ( opinionDetails , hasAbbreviationsPage , hasToC , print ,
     let text = ''; 
     let chapterNo = 1;
 
-    opinionDetails.sort( helper.opinionDetailsSortASC );   
+    opinionDetails.sort( helper.opinionDetailsSortASC );
     const opDetailLayerA = opinionDetails.filter( FilterOpDetailsLayerA );
     if ( hasToC ) {
         text += '<div class="page-breaks">';

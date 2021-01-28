@@ -33,14 +33,21 @@ const GetPDFPathFile = ( iPath , iFileName , tmp = false ) => {
 const opinionDetailsSortASC = ( opinionDetailA , opinionDetailB ) => {
   // Mit "parentPosition" und "position":
   // Funktion zur Sortierung der Gutachten-Details.
-  let pValue1 = opinionDetailA.parentPosition;
-  let pValue2 = opinionDetailB.parentPosition;
+  let pValueA = opinionDetailA.parentPosition;
+  let pValueB = opinionDetailB.parentPosition;
 
-  if ( !EmptyString( pValue1 )
-    && !EmptyString( pValue2 ) ) {
-    if ( pValue2 > pValue1 )
+  if ( !EmptyString( pValueA ) ) {
+    if ( !EmptyString( pValueB ) ) {
+      if ( pValueA < pValueB )
+        return -1;
+      else if ( pValueA > pValueB )
+        return 1;
+    }
+    else
       return 1;
   }
+  else if ( !EmptyString( pValueB ) )
+    return -1;
 
   return opinionDetailA.position - opinionDetailB.position;
 }
