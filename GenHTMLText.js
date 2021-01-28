@@ -158,7 +158,6 @@ const GetHeadingRegExp = ( ToCPoint ) => {
 }
 
 const GetToCItemDepth = ( chapter ) => {
-    //console.log( chapter );
     chapter = String( chapter );
     let countedPoints = 0;
     let index = chapter.indexOf( '.' , 0 )
@@ -166,7 +165,6 @@ const GetToCItemDepth = ( chapter ) => {
         countedPoints++;
         index = chapter.indexOf( '.' , index + 1 )
     }
-    //console.log( countedPoints );
     if ( countedPoints > 7 )
         countedPoints = 7;// In CSS (basic.css) maximal eingestellte Einrückung.
     return `item depth-${countedPoints}`;
@@ -237,10 +235,44 @@ const GetChildrenToc = ( opDetails , parentID , chapter , print , ToCPageNos , w
 
 const CanHaveChildren = ( opDetail ) => {
     if ( opDetail.type == 'HEADING'
-      || opDetail.type == 'QUESTION' )
+      || opDetail.type == 'QUESTION'
+      || opDetail.type == 'PICTURECONTAINER' )
         return true;
     else
         return false;
+}
+
+const RenderPictures = ( opDetail ) => {
+    let text = '';
+    if ( opDetail.type == 'PICTURE'
+      && opDetail.files 
+      && opDetail.files.length > 0 ) {
+        let pic;
+        opDetail.files.forEach( file => {
+            if ( !helper.EmptyString( file.path )
+              && !helper.EmptyString( file.extension )
+              && ( file.extension == 'jpg'
+                || file.extension == 'jpeg'
+                || file.extension == 'png' ) ) {
+                if ( fs.existsSync( file.path ) ) {
+                    pic = fs.readFileSync( file.path );
+                    //text += `<img style="width: 8cm;" alt="[Das hinterlegte Bild \'${file.name}\' kann nicht geladen werden.]" src="data:image/png;base64,${Buffer.from( pic ).toString('base64')}">`;
+                    text += `<img alt="[Das hinterlegte Bild \'${file.name}\' kann nicht geladen werden.]" src="data:image/png;base64,${Buffer.from( pic ).toString('base64')}">`;
+                }
+                else
+                    console.log( `Bilddatei \'${file.name}\' nicht vorhanden.` );
+            }
+        });
+    }
+    return text;
+}
+
+const GetMainChapterNo = ( chapter ) => {
+    chapter = String( chapter );
+    let index = chapter.indexOf( '.' , 0 )
+    if ( index > 0 )
+        chapter = chapter.slice( 0 , index );
+    return chapter;
 }
 
 const GetChildren = ( opDetails , parentID , chapter , tmp ) => {
@@ -258,7 +290,7 @@ const GetChildren = ( opDetails , parentID , chapter , tmp ) => {
 
     let htmlContent;
     let canHaveChildren = false;
-    detailArray.forEach( currentDetailValue => {
+    detailArray.forEach( ( currentDetailValue , index ) => {
         if ( currentDetailValue.type == 'PAGEBREAK' ) {
             if ( !currentDetailValue.deleted
               && !currentDetailValue.finallyRemoved )
@@ -267,27 +299,35 @@ const GetChildren = ( opDetails , parentID , chapter , tmp ) => {
         else {
             canHaveChildren = CanHaveChildren( currentDetailValue );
             //text += `<div class="${GetPageClass( currentDetailValue )}">`;
-            text += '<div>';
+            //text += '<div>';
+            //if ( !helper.EmptyString( currentDetailValue.htmlContent ) && currentDetailValue.type != 'PICTURE' ) {
             if ( !helper.EmptyString( currentDetailValue.htmlContent ) ) {
                 htmlContent = currentDetailValue.htmlContent
                 .replace( /\{\{XparentPosition\}\}/ , `${chapter}.` )
                 .replace( /\{\{Xposition\}\}/ , `${subChapterNo}` );
-                if ( tmp && currentDetailValue.printTitle )
+                if ( tmp && !helper.EmptyString( currentDetailValue.printTitle ) )
                     htmlContent = htmlContent.replace( new RegExp( helper.escapeRegExp( currentDetailValue.printTitle ) ) , currentDetailValue._id );
+                if ( currentDetailValue.type == 'PICTURE' ) {
+                    htmlContent = htmlContent
+                    .replace( /\{\{index\}\}/ , `${GetMainChapterNo( chapter )}.${index + 1}` )
+                    .replace( /\{\{pictures\}\}/ , RenderPictures( currentDetailValue ) );
+                    //.replace( /\{\{pictures\}\}/ , `Bilder...` );
+                }                
                 if ( canHaveChildren )
                     htmlContent = htmlContent.replace( /\{\{childContent\}\}/ , GetChildren( opDetails , currentDetailValue._id , `${chapter}.${subChapterNo}` , tmp ) );
                 text += htmlContent;
             }
-            else {
+            /*else {
                 //text += helper.GetFormatText( currentDetailValue , `${chapter}.${subChapterNo}` , 'B' );
                 text += helper.GetFormatText2( currentDetailValue , 'B' )
                 .replace( /\{\{XparentPosition\}\}/ , `${chapter}.` )
                 .replace( /\{\{Xposition\}\}/ , `${subChapterNo}` );
-            }
-            text += '</div>';
+            }*/
+            //text += '</div>';
             // Weitere OpinionDetails zu diesem OpinionDetail.
-            if ( !canHaveChildren )
-                text += GetChildren( opDetails , currentDetailValue._id , `${chapter}.${subChapterNo}` , tmp );
+            /*if ( !canHaveChildren )
+                // Wenn canHaveChildren = true, wird {{childContent}} verwendet.
+                text += GetChildren( opDetails , currentDetailValue._id , `${chapter}.${subChapterNo}` , tmp );*/
             //if ( currentDetailValue.type == 'HEADING' )
             if ( currentDetailValue.showInToC
             && !helper.EmptyString( currentDetailValue.printTitle ) )
@@ -325,7 +365,9 @@ const GetDynContent = ( opinionDetails , hasAbbreviationsPage , hasToC , print ,
         let bitmap = fs.readFileSync( 'C:/Users/marc.tomaschoff/meteor/html-create/Files/orange_FooterBlock.png');
             
         text += `<img src="data:image/png;base64,${new Buffer(bitmap).toString('base64')}">`;
-        console.log(`<img src="data:image/png;base64,${new Buffer(bitmap).toString('base64')}">`);*/
+        console.log(`<img src="data:image/png;base64,${new Buffer(bitmap).toString('base64')}">`);
+        //besser:
+        console.log(`<img src="data:image/png;base64,${Buffer.from(bitmap).toString('base64')}">`);*/
         
         // Funktioniert in HTML5-to-pdf!
         /*let fs = require( 'fs' );
@@ -428,7 +470,7 @@ const GetDynContent = ( opinionDetails , hasAbbreviationsPage , hasToC , print ,
     chapterNo = 1;
     let htmlContent;
     let canHaveChildren = false;
-    opDetailLayerA.forEach( currentDetail => {
+    opDetailLayerA.forEach( ( currentDetail , index ) => {
         if ( currentDetail.type == 'PAGEBREAK' ) {
             if ( !currentDetail.deleted
               && !currentDetail.finallyRemoved )
@@ -437,27 +479,35 @@ const GetDynContent = ( opinionDetails , hasAbbreviationsPage , hasToC , print ,
         else {
             canHaveChildren = CanHaveChildren( currentDetail );
             //text += `<div class="${GetPageClass( currentDetail )}">`;
-            text += '<div>'
+            //text += '<div>'
+            //if ( !helper.EmptyString( currentDetail.htmlContent ) && currentDetail.type != 'PICTURE' ) {
             if ( !helper.EmptyString( currentDetail.htmlContent ) ) {
                 htmlContent = currentDetail.htmlContent
                 .replace( /\{\{XparentPosition\}\}/ , '' )
                 .replace( /\{\{Xposition\}\}/ , `${chapterNo}.` );
-                if ( tmp && currentDetail.printTitle )
+                if ( tmp && !helper.EmptyString( currentDetail.printTitle ) )
                     htmlContent = htmlContent.replace( new RegExp( helper.escapeRegExp( currentDetail.printTitle ) ) , currentDetail._id );
+                if ( currentDetail.type == 'PICTURE' ) {
+                    htmlContent = htmlContent
+                    .replace( /\{\{index\}\}/ , `${chapterNo}.${index + 1}` )
+                    .replace( /\{\{pictures\}\}/ , RenderPictures( currentDetail ) );
+                    //.replace( /\{\{pictures\}\}/ , `Bilder...` );
+                }
                 if ( canHaveChildren )
                     htmlContent = htmlContent.replace( /\{\{childContent\}\}/ , GetChildren( opinionDetails , currentDetail._id , chapterNo , tmp ) );
                 text += htmlContent;
             }
-            else {
+            /*else {
                 //text += helper.GetFormatText( currentDetail , chapterNo , 'A' );
                 text += helper.GetFormatText2( currentDetail , 'A' )
                 .replace( /\{\{XparentPosition\}\}/ , '' )
                 .replace( /\{\{Xposition\}\}/ , `${chapterNo}.` );
-            }
-            text += '</div>';
+            }*/
+            //text += '</div>';
             // Weitere OpinionDetails zu diesem OpinionDetail.
-            if ( !canHaveChildren )
-                text += GetChildren( opinionDetails , currentDetail._id , chapterNo , tmp );
+            /*if ( !canHaveChildren )
+                // Wenn canHaveChildren = true, wird {{childContent}} verwendet.
+                text += GetChildren( opinionDetails , currentDetail._id , chapterNo , tmp );*/
             
             chapterNo += 1;
         }

@@ -103,14 +103,63 @@ const opinionDetailsSortASC = ( opinionDetailA , opinionDetailB ) => {
   return String( chapter ).replace( /\./g , '-' );
 }*/
 
-const GetFormatText2 = ( opDetail , layer ) => {
+/*const renderPicture = ( opDetail , depth ) => {
+  console.log( 'Pic' );
+  let text = '';
+  if ( opDetail.type == 'PICTURE'
+    && opDetail.files 
+    && opDetail.files.length > 0 ) {
+    let fs = require( 'fs' );
+    let pic;
+    opDetail.files.forEach( file => {
+      if ( !EmptyString( file.path )
+        && !EmptyString( file.extension )
+        && ( file.extension == 'jpg'
+          || file.extension == 'jpeg'
+          || file.extension == 'png' ) ) {
+        if ( fs.existsSync( file.path ) ) {
+          pic = fs.readFileSync( file.path );
+          text += `<img style="width: 8cm;" alt="[Das hinterlegte Bild \'${file.name}\' kann nicht geladen werden.]" src="data:image/png;base64,${Buffer.from( pic ).toString('base64')}">`;
+        }
+        else
+          console.log( 'Bilddatei nicht vorhanden.' );
+      }
+    });
+  }
+  return text;
+}*/
+
+/*let text = `
+    <div class="mbac-item-type-picture">
+    <table class="mbac-item-type-picture">
+    <thead>
+        <tr>
+            <td>Nr.</td>
+            <td>Fotodokumentation</td>
+            <td>Bemerkungen</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+    </tbody>
+  </table>
+  </div>`;*/
+
+/*const GetFormatText2 = ( opDetail , layer ) => {
   let depth = 0;
   if ( layer != 'A' )
     depth = 1;
-  return layoutTypes.renderTemplate( opDetail , depth );
-}
+  if ( opDetail.type == 'PICTURE' )
+    return renderPicture( opDetail , depth );
+  else
+    return layoutTypes.renderTemplate( opDetail , depth );
+}*/
 
-const GetFormatText = ( opDetail , chapterNo , layer ) => {
+/*const GetFormatText = ( opDetail , chapterNo , layer ) => {
   let text = '';
   
   let formatText = opDetail.text;
@@ -217,10 +266,10 @@ const GetFormatText = ( opDetail , chapterNo , layer ) => {
     text += formatText; 
   
   return text;
-};
+};*/
 
 const escapeRegExp = ( rexp ) => {
   return rexp.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
 }
 
-module.exports = { EmptyString , GetTodayDateString , opinionDetailsSortASC , GetFormatText , GetFormatText2 , escapeRegExp , GetPDFPathFile };
+module.exports = { EmptyString , GetTodayDateString , opinionDetailsSortASC , /*GetFormatText , GetFormatText2 ,*/ escapeRegExp , GetPDFPathFile };

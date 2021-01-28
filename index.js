@@ -100,12 +100,8 @@ const createPDFFile_html5_to_pdf = async ( iPathFile , iHTMLText ) => {
             await html5ToPDF.start();
             let buf = await html5ToPDF.build();
             await html5ToPDF.close();
-            if ( buf ) {
-                fs.writeFileSync( iPathFile , buf , err => {
-                    if ( err )
-                        return console.log( err );
-                });
-            }
+            if ( buf )
+                fs.writeFileSync( iPathFile , buf );
             resolve();
         }
         catch( err ) {
@@ -164,8 +160,14 @@ const SetPages = ( arrHead , text ) => {
         if ( match
           && match.length > 1 ) {
             let pageNo = match[ 1 ];
-            if ( pageNo > 3 )
+            if ( pageNo > 3 ) {
                 element.page = pageNo - 1;
+                /*// Text vor der Fundstelle rauslöschen.
+                // Das ist aber nicht notwendig, da nach den IDs gesucht wird und damit Mehrfachfunde ausgeschlossen sein sollten.
+                index = text.search( exp );
+                if ( index > -1 )
+                    text = text.slice( index + element.name.length );*/
+            }
         }
     });
 }
@@ -233,7 +235,7 @@ const pdfCreate = async ( opinion , opinionDetails , path , hasAbbreviationsPage
                 await createPDFFile_html5_to_pdf( tmpPathFile , htmlText );
                 // PDF lesen und Seitenzahlen ermitteln.
                 let result = await readPDF_parse( tmpPathFile );
-                // Temporäre Datei löschen.
+                // Temporäre Datei löschen, wenn diese existiert.
                 if ( fs.existsSync( tmpPathFile ) ) {
                     fs.unlink( tmpPathFile , ( err ) => {
                         if ( err )
