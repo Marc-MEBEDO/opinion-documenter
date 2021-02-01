@@ -433,11 +433,61 @@ table.mbac-item-type-picture-container tr td:nth-child(2) {
     width: 7.7cm;
 }
 
-/*.mbac-item-type-picture-container img {
-    width: 8.2cm;
-}*/
 tr.mbac-item-type-picture td img {
     width: 8.2cm;
+}
+
+.mbac-item-type-todolist {
+    padding-bottom: 1em;
+}
+
+table.mbac-item-type-todolist {
+    width: 18cm;
+    border-collapse: collapse;
+}
+
+table.mbac-item-type-todolist > thead {
+    font-weight: bold;
+    background-color: #F2F2F2;
+    text-align: center;
+}
+
+table.mbac-item-type-todolist > thead td {
+    padding: 8px;
+}
+
+table.mbac-item-type-todolist td {
+    border: 1px solid black;
+    border-collapse: collapse;
+    padding: 4px;
+}
+
+table.mbac-item-type-todolist tr td:nth-child(1) {
+    width: 1.5cm;
+}
+
+tr.mbac-item-type-todolist-item-head {
+    font-weight: bold;
+}
+
+tr.mbac-item-type-todolist-item-head.adhoc {
+    background-color: red;
+}
+
+tr.mbac-item-type-todolist-item-head.kurz {
+    background-color: orange;
+}
+
+tr.mbac-item-type-todolist-item-head.mittel {
+    background-color: rgba(191, 191, 23, 1);
+}
+
+tr.mbac-item-type-todolist-item-head.verbesserung {
+    background-color: green;
+}
+
+tr.mbac-item-type-todolist-item-head.okay {
+    background-color: #999;
 }
 
 .mbac-text {

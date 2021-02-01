@@ -73,7 +73,13 @@ const GetExpert = ( expert , long = true ) => {
           && !helper.EmptyString( expert.advancedQualification ) )
             exp += '<br>';
         if ( !helper.EmptyString( expert.advancedQualification ) )
-            exp += `(${expert.advancedQualification})`;
+            exp += `${expert.advancedQualification}`;
+        
+        if ( !helper.EmptyString( exp )
+          && !helper.EmptyString( expert.company ) )
+            exp += '<br>';
+        if ( !helper.EmptyString( expert.company ) )
+            exp += `${expert.company}`;
     }       
     return exp;
 }
@@ -275,7 +281,39 @@ const GetMainChapterNo = ( chapter ) => {
     return chapter;
 }
 
-const GetChildren = ( opDetails , parentID , chapter , tmp ) => {
+const GetTodoItems = ( detailsTodoList , chapter , questionChapters ) => {
+    // "Holt" alle TodoItems zum übergebenen Gutachten-Detail (=parentID) des übergeordneten Typs TODOLIST.
+    // detailsTodoList sollte alle aktiven Gutachten-Details des Typs "QUESTION" mit einer Handlungsempfehlung (actionText) enthalten, sortiert nach actionPrio.
+    if ( !detailsTodoList
+      || detailsTodoList.length == 0 )
+        return '';
+    let actionHead = '';
+    let text = '';
+    const actionCodes = require('./constData/actionCodes').actionCodes;
+    detailsTodoList.forEach( ( item , index ) => {
+        if ( item.actionCode
+          && actionHead != item.actionCode ) {
+            actionHead = item.actionCode;
+            //Neue Überschrift.
+            text += `<tr class="mbac-item-type-todolist-item-head ${item.actionCode}">`;
+            text += `<td colspan="2">${actionCodes[ item.actionCode ].text} - ${actionCodes[ item.actionCode ].longtext}</td>`;
+            text += '</tr>';
+        }
+        text += '<tr class="mbac-item-type-todolist-item">';
+        text += `<td>${index+1}</td>`;
+        const chap = questionChapters.find( ( element ) => {
+            return ( element._id == item._id );
+        });
+        let chapterNo = '';
+        if ( chap )
+            chapterNo = chap.chapter;
+        text += `<td>${item.actionText} <a href="#${item._id}">(${chapterNo})</a></td>`;
+        text += '</tr>';
+    });
+    return text;
+}
+
+const GetChildren = ( opDetails , detailsTodoList , parentID , chapter , tmp , questionChapters ) => {
     // "Holt" alle Children zum übergebenen Gutachten-Detail (=parentID).
     let text = '';
     let subChapterNo = 1;
@@ -307,15 +345,33 @@ const GetChildren = ( opDetails , parentID , chapter , tmp ) => {
                 .replace( /\{\{Xposition\}\}/ , `${subChapterNo}` );
                 if ( tmp && !helper.EmptyString( currentDetailValue.printTitle ) )
                     htmlContent = htmlContent.replace( new RegExp( helper.escapeRegExp( currentDetailValue.printTitle ) ) , currentDetailValue._id );
+                if ( currentDetailValue.type == 'PICTURECONTAINER' )
+                    htmlContent = htmlContent.replace( /#/ , 'Nr.' );
                 if ( currentDetailValue.type == 'PICTURE' ) {
                     htmlContent = htmlContent
                     .replace( /\{\{index\}\}/ , `${GetMainChapterNo( chapter )}.${index + 1}` )
                     .replace( /\{\{pictures\}\}/ , RenderPictures( currentDetailValue ) );
                     //.replace( /\{\{pictures\}\}/ , `Bilder...` );
-                }                
-                if ( canHaveChildren )
-                    htmlContent = htmlContent.replace( /\{\{childContent\}\}/ , GetChildren( opDetails , currentDetailValue._id , `${chapter}.${subChapterNo}` , tmp ) );
+                }      
+                else if ( currentDetailValue.type == 'TODOLIST' ) {
+                    htmlContent = htmlContent
+                    .replace( /\{\{todoitems\}\}/ , GetTodoItems( detailsTodoList , `${chapter}.${subChapterNo}` , questionChapters ) )
+                }
+                if ( canHaveChildren ) {
+                    htmlContent = htmlContent
+                    .replace( /\{\{childContent\}\}/ , GetChildren( opDetails , detailsTodoList , currentDetailValue._id , `${chapter}.${subChapterNo}` , tmp , questionChapters ) );
+                }
                 text += htmlContent;
+
+                if ( currentDetailValue.type == 'QUESTION' ) {
+                    // Speicherung der Kapitelnummern der Fragen für die Todo-List:
+                    questionChapters.push(
+                        {
+                            _id: currentDetailValue._id,
+                            chapter: `${chapter}.${subChapterNo}`
+                        });
+                    //console.log( questionChapters );
+                }
             }
             /*else {
                 //text += helper.GetFormatText( currentDetailValue , `${chapter}.${subChapterNo}` , 'B' );
@@ -337,7 +393,7 @@ const GetChildren = ( opDetails , parentID , chapter , tmp ) => {
     return text;
 }
 
-const GetDynContent = ( opinionDetails , hasAbbreviationsPage , hasToC , print , ToCPageNos , headingsArray , tmp ) => {
+const GetDynContent = ( opinionDetails , detailsTodoList , hasAbbreviationsPage , hasToC , print , ToCPageNos , headingsArray , tmp ) => {
     // Inhalt ab Seite 3.
     if ( !opinionDetails )
         return '';
@@ -470,6 +526,7 @@ const GetDynContent = ( opinionDetails , hasAbbreviationsPage , hasToC , print ,
     chapterNo = 1;
     let htmlContent;
     let canHaveChildren = false;
+    let questionChapters = [];// Für die Abschlussbetrachtung.
     opDetailLayerA.forEach( ( currentDetail , index ) => {
         if ( currentDetail.type == 'PAGEBREAK' ) {
             if ( !currentDetail.deleted
@@ -487,15 +544,33 @@ const GetDynContent = ( opinionDetails , hasAbbreviationsPage , hasToC , print ,
                 .replace( /\{\{Xposition\}\}/ , `${chapterNo}.` );
                 if ( tmp && !helper.EmptyString( currentDetail.printTitle ) )
                     htmlContent = htmlContent.replace( new RegExp( helper.escapeRegExp( currentDetail.printTitle ) ) , currentDetail._id );
+                if ( currentDetail.type == 'PICTURECONTAINER' )
+                    htmlContent = htmlContent.replace( /#/ , 'Nr.' );
                 if ( currentDetail.type == 'PICTURE' ) {
                     htmlContent = htmlContent
                     .replace( /\{\{index\}\}/ , `${chapterNo}.${index + 1}` )
                     .replace( /\{\{pictures\}\}/ , RenderPictures( currentDetail ) );
                     //.replace( /\{\{pictures\}\}/ , `Bilder...` );
                 }
-                if ( canHaveChildren )
-                    htmlContent = htmlContent.replace( /\{\{childContent\}\}/ , GetChildren( opinionDetails , currentDetail._id , chapterNo , tmp ) );
+                else if ( currentDetail.type == 'TODOLIST' ) {
+                    htmlContent = htmlContent
+                    .replace( /\{\{todoitems\}\}/ , GetTodoItems( detailsTodoList , chapterNo , questionChapters ) )
+                }
+                if ( canHaveChildren ) {
+                    htmlContent = htmlContent
+                    .replace( /\{\{childContent\}\}/ , GetChildren( opinionDetails , detailsTodoList , currentDetail._id , chapterNo , tmp , questionChapters ) );
+                }
                 text += htmlContent;
+                
+                if ( currentDetail.type == 'QUESTION' ) {
+                    // Speicherung der Kapitelnummern der Fragen für die Todo-List:
+                    questionChapters.push(
+                        {
+                            _id: currentDetail._id,
+                            chapter: chapterNo
+                        });
+                    //console.log( questionChapters );
+                }
             }
             /*else {
                 //text += helper.GetFormatText( currentDetail , chapterNo , 'A' );
@@ -515,11 +590,11 @@ const GetDynContent = ( opinionDetails , hasAbbreviationsPage , hasToC , print ,
     return text;
 }
 
-const GetBody = ( opinion, opinionDetails , hasAbbreviationsPage , hasToC , print , ToCPageNos , headingsArray , tmp ) => {
+const GetBody = ( opinion, opinionDetails , detailsTodoList , hasAbbreviationsPage , hasToC , print , ToCPageNos , headingsArray , tmp ) => {
     return '<body>'
          + GetFirstPage()
          + GetSecondPage( opinion )
-         + GetDynContent( opinionDetails , hasAbbreviationsPage , hasToC , print , ToCPageNos , headingsArray , tmp )
+         + GetDynContent( opinionDetails , detailsTodoList , hasAbbreviationsPage , hasToC , print , ToCPageNos , headingsArray , tmp )
          + '</body>';
 }
 
@@ -561,8 +636,8 @@ const ReplaceVariables = ( htmlText , opinion ) => {
     return htmlText;
 }
 
-const generateHTMLText = ( opinion , opinionDetails , hasAbbreviationsPage , hasToC , print , ToCPageNos , headingsArray , tmp = false ) => {
-    return ReplaceVariables( GetBody( opinion , opinionDetails , hasAbbreviationsPage , hasToC , print , ToCPageNos , headingsArray , tmp ) , opinion );
+const generateHTMLText = ( opinion , opinionDetails , detailsTodoList , hasAbbreviationsPage , hasToC , print , ToCPageNos , headingsArray , tmp = false ) => {
+    return ReplaceVariables( GetBody( opinion , opinionDetails , detailsTodoList , hasAbbreviationsPage , hasToC , print , ToCPageNos , headingsArray , tmp ) , opinion );
 }
 
 module.exports = { generateHTMLText };
