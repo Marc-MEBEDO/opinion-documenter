@@ -89,7 +89,7 @@ const GetSecondPage = ( opinion ) => {
     let pagedata = fs.readFileSync( pathFile , 'utf-8' );
     //let pagedata = fs.readFileSync( './Files/page2.html' , 'utf-8' );
     //pagedata = pagedata.replace( /\{\{company_name\}\}/ , opinion.customer.name );
-    pagedata = pagedata.replace( /\{\{Name_Auftraggeber\}\}/ , 'opinion.customer.contact_person' );
+    /**/pagedata = pagedata.replace( /\{\{Name_Auftraggeber\}\}/ , '' );//'opinion.customer.contact_person' );
     pagedata = pagedata.replace( /\{\{street\}\}/ , opinion.customer.street );
     pagedata = pagedata.replace( /\{\{postal_city\}\}/ , (opinion.customer.postalCode + ' ' + opinion.customer.city) );
 
@@ -242,7 +242,8 @@ const GetChildrenToc = ( opDetails , parentID , chapter , print , ToCPageNos , w
 const CanHaveChildren = ( opDetail ) => {
     if ( opDetail.type == 'HEADING'
       || opDetail.type == 'QUESTION'
-      || opDetail.type == 'PICTURECONTAINER' )
+      || opDetail.type == 'PICTURECONTAINER'
+      /**/|| opDetail.type == 'ANSWER' )
         return true;
     else
         return false;
@@ -289,21 +290,23 @@ const GetTodoItems = ( detailsTodoList , chapter , questionChapters ) => {
         return '';
     let actionHead = '';
     let text = '';
-    const actionCodes = require('./constData/actionCodes').actionCodes;
+    const actionCodes = require('./constData/actioncodes').actionCodes;
     detailsTodoList.forEach( ( item , index ) => {
         if ( item.actionCode
           && actionHead != item.actionCode ) {
             actionHead = item.actionCode;
             //Neue Überschrift.
             text += `<tr class="mbac-item-type-todolist-item-head ${item.actionCode}">`;
-            text += `<td colspan="2">${actionCodes[ item.actionCode ].text} - ${actionCodes[ item.actionCode ].longtext}</td>`;
+            text += `<td colspan="2">${actionCodes[ item.actionCode ].longtext} - ${actionCodes[ item.actionCode ].text}</td>`;
             text += '</tr>';
         }
         text += '<tr class="mbac-item-type-todolist-item">';
         text += `<td>${index+1}</td>`;
+        ///**/console.log( item.id , ' ' , item.printTitle );
         const chap = questionChapters.find( ( element ) => {
             return ( element._id == item._id );
         });
+        ///**/console.log( chap );
         let chapterNo = '';
         if ( chap )
             chapterNo = chap.chapter;
@@ -370,7 +373,7 @@ const GetChildren = ( opDetails , detailsTodoList , parentID , chapter , tmp , q
                             _id: currentDetailValue._id,
                             chapter: `${chapter}.${subChapterNo}`
                         });
-                    //console.log( questionChapters );
+                    /**///console.log( questionChapters );
                 }
             }
             /*else {
@@ -569,7 +572,7 @@ const GetDynContent = ( opinionDetails , detailsTodoList , hasAbbreviationsPage 
                             _id: currentDetail._id,
                             chapter: chapterNo
                         });
-                    //console.log( questionChapters );
+                    /**///console.log( questionChapters );
                 }
             }
             /*else {
