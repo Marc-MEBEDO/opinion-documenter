@@ -282,7 +282,7 @@ const GetMainChapterNo = ( chapter ) => {
     return chapter;
 }
 
-const GetTodoItems = ( detailsTodoList , chapter , questionChapters ) => {
+const GetTodoItems = ( detailsTodoList , /*chapter ,*/ questionChapters ) => {
     // "Holt" alle TodoItems zum übergebenen Gutachten-Detail (=parentID) des übergeordneten Typs TODOLIST.
     // detailsTodoList sollte alle aktiven Gutachten-Details des Typs "QUESTION" mit einer Handlungsempfehlung (actionText) enthalten, sortiert nach actionPrio.
     if ( !detailsTodoList
@@ -302,15 +302,13 @@ const GetTodoItems = ( detailsTodoList , chapter , questionChapters ) => {
         }
         text += '<tr class="mbac-item-type-todolist-item">';
         text += `<td>${index+1}</td>`;
-        ///**/console.log( item.id , ' ' , item.printTitle );
+        let chapterNo = '';
         const chap = questionChapters.find( ( element ) => {
             return ( element._id == item._id );
         });
-        ///**/console.log( chap );
-        let chapterNo = '';
         if ( chap )
             chapterNo = chap.chapter;
-        text += `<td>${item.actionText} <a href="#${item._id}">(${chapterNo})</a></td>`;
+        text += `<td>${item.actionText} (<a href="#${item._id}">${chapterNo}</a>)</td>`;
         text += '</tr>';
     });
     return text;
@@ -320,6 +318,7 @@ const GetChildren = ( opDetails , detailsTodoList , parentID , chapter , tmp , q
     // "Holt" alle Children zum übergebenen Gutachten-Detail (=parentID).
     let text = '';
     let subChapterNo = 1;
+    let questSubChapterNo = 1;//Für die Kapitelnummern der Fragen für die Todo-List.
     let detailArray = opDetails.filter( opDetail => {
         return ( opDetail
               && !opDetail.deleted
@@ -358,7 +357,7 @@ const GetChildren = ( opDetails , detailsTodoList , parentID , chapter , tmp , q
                 }      
                 else if ( currentDetailValue.type == 'TODOLIST' ) {
                     htmlContent = htmlContent
-                    .replace( /\{\{todoitems\}\}/ , GetTodoItems( detailsTodoList , `${chapter}.${subChapterNo}` , questionChapters ) )
+                    .replace( /\{\{todoitems\}\}/ , GetTodoItems( detailsTodoList , /*`${chapter}.${subChapterNo}` ,*/ questionChapters ) )
                 }
                 if ( canHaveChildren ) {
                     htmlContent = htmlContent
@@ -371,9 +370,9 @@ const GetChildren = ( opDetails , detailsTodoList , parentID , chapter , tmp , q
                     questionChapters.push(
                         {
                             _id: currentDetailValue._id,
-                            chapter: `${chapter}.${subChapterNo}`
+                            chapter: `${chapter}.${questSubChapterNo}`
                         });
-                    /**///console.log( questionChapters );
+                    questSubChapterNo += 1;
                 }
             }
             /*else {
@@ -557,7 +556,7 @@ const GetDynContent = ( opinionDetails , detailsTodoList , hasAbbreviationsPage 
                 }
                 else if ( currentDetail.type == 'TODOLIST' ) {
                     htmlContent = htmlContent
-                    .replace( /\{\{todoitems\}\}/ , GetTodoItems( detailsTodoList , chapterNo , questionChapters ) )
+                    .replace( /\{\{todoitems\}\}/ , GetTodoItems( detailsTodoList , /*chapterNo ,*/ questionChapters ) )
                 }
                 if ( canHaveChildren ) {
                     htmlContent = htmlContent
@@ -572,7 +571,6 @@ const GetDynContent = ( opinionDetails , detailsTodoList , hasAbbreviationsPage 
                             _id: currentDetail._id,
                             chapter: chapterNo
                         });
-                    /**///console.log( questionChapters );
                 }
             }
             /*else {
