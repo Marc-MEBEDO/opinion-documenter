@@ -367,6 +367,7 @@ div.recommendation {
 table.mbac-item-type-bestimmungen {
     /*width: 17.8cm;*/
     border-collapse: collapse;
+    padding-bottom: 1em;
 }
 
 .mbac-item-type-bestimmungen thead {
@@ -416,7 +417,7 @@ table.mbac-item-type-picture-container > thead {
 }
 
 table.mbac-item-type-picture-container > thead td {
-    padding: 8px;
+    padding: 4px;
 }
 
 table.mbac-item-type-picture-container td {
@@ -453,7 +454,7 @@ table.mbac-item-type-todolist > thead {
 }
 
 table.mbac-item-type-todolist > thead td {
-    padding: 8px;
+    padding: 4px;
 }
 
 table.mbac-item-type-todolist td {
@@ -488,6 +489,27 @@ tr.mbac-item-type-todolist-item-head.verbesserung {
 
 tr.mbac-item-type-todolist-item-head.okay {
     background-color: #999;
+}
+
+table.table-notBordered {
+    text-align: left;
+}
+
+table.table-bordered {
+    text-align: left;
+    border-collapse: collapse;
+    width: 18cm;
+}
+
+table.table-bordered tr:nth-child(1) {
+    font-weight: bold;
+    background-color: #F2F2F2;
+}
+
+table.table-bordered td {
+    padding: 4px;
+    border-collapse: collapse;
+    border: 1px solid black;
 }
 
 .mbac-text {

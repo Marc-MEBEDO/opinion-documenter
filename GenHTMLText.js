@@ -387,8 +387,9 @@ const GetChildren = ( opDetails , detailsTodoList , parentID , chapter , tmp , q
                 // Wenn canHaveChildren = true, wird {{childContent}} verwendet.
                 text += GetChildren( opDetails , currentDetailValue._id , `${chapter}.${subChapterNo}` , tmp );*/
             //if ( currentDetailValue.type == 'HEADING' )
-            if ( currentDetailValue.showInToC
-            && !helper.EmptyString( currentDetailValue.printTitle ) )
+            if ( ( currentDetailValue.showInToC
+                || currentDetailValue.type == 'HEADING' )
+              && !helper.EmptyString( currentDetailValue.printTitle ) )
                 subChapterNo += 1;
         }
     });
