@@ -92,11 +92,13 @@ ul.part {
 }
 
 .toc_Point .depth-0 {
-    padding-left: 0px
+    padding-left: 0px;
+    max-width: 17.2cm;
 }
     
 .toc_Point .depth-1 {
-    padding-left: 32px
+    padding-left: 32px;
+    max-width: 16.4cm;
 }
 
 .toc_Point .depth-2 {
@@ -207,6 +209,7 @@ div.recommendation {
 .mbac-item-type-heading > .mbac-title {
     font-weight: bold;
     padding-bottom: 1em;
+    text-align: left;
 }
 
 .mbac-item-type-heading > .mbac-text {
@@ -253,7 +256,7 @@ div.recommendation {
 
 .mbac-item-type-question .mbac-item-type-text {
     border-bottom: 1px solid;
-    padding-top: 1em;
+    /*padding-top: 1em;*/
     padding-bottom: 1em;
 }
 
@@ -367,7 +370,8 @@ div.recommendation {
 table.mbac-item-type-bestimmungen {
     /*width: 17.8cm;*/
     border-collapse: collapse;
-    padding-bottom: 1em;
+    /*padding-bottom: 1em;*/
+    margin-bottom: 1em;
 }
 
 .mbac-item-type-bestimmungen thead {
