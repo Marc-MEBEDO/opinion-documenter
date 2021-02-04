@@ -192,12 +192,12 @@ const ModifyArray = ( headArray ) => {
 /* Parameter:
     opinion:        Das Gutachten "Objekt".
     opinionDetails: Das Array der zum Gutachten gehörenden Gutachten-Details.
-    detailsTodoList: Das Array der Gutachten-Details, das alln im Gutachten enthaltenen (aktiven) Fragen mit Handlungsbedarf enthält.
-    path:           Pfad, in den zu erstellendes PDF Dokument geschrieben werden soll.
-                    Der Dateiname ist immer "{opinion._id}.pdf"
-    hasAbbreviationsPage: Bool, der angibt, ob Abkürzungsvereichnis enthalten sein soll.
-    hasToC:         Bool, der angibt, ob Inhaltsverzeichnis generiert werden soll.
-    print:          Bool, der angibt, ob PDF für Ausdruck (=true) gedacht ist oder nicht (=false).
+    detailsTodoList: Das Array der Gutachten-Details, das alle im Gutachten enthaltenen (aktiven) Fragen mit Handlungsbedarf enthält.
+    path:           Pfad, in den das zu erstellendes PDF Dokument geschrieben werden soll.
+                    Als Dateiname wird automatisch "{opinion._id}.pdf" gesetzt.
+    hasAbbreviationsPage: default: true - Bool, der angibt, ob im Dokument das fest hinterlegte Abkürzungsvereichnis enthalten sein soll.
+    hasToC:         default: true - Bool, der angibt, ob Inhaltsverzeichnis generiert werden soll.
+    print:          default: false - Bool, der angibt, ob PDF für Ausdruck (=true) gedacht ist oder nicht (=false).
                     Wenn print == false (also rein für digitale Betrachtung), dann werden im Inhaltsverzeichnis Links eingefügt.
                     Bei print == true keine Links.
                     Nur relevant, wenn hasToC == true.

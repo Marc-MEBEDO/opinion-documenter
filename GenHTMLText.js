@@ -89,7 +89,7 @@ const GetSecondPage = ( opinion ) => {
     let pagedata = fs.readFileSync( pathFile , 'utf-8' );
     //let pagedata = fs.readFileSync( './Files/page2.html' , 'utf-8' );
     //pagedata = pagedata.replace( /\{\{company_name\}\}/ , opinion.customer.name );
-    /**/pagedata = pagedata.replace( /\{\{Name_Auftraggeber\}\}/ , '' );//'opinion.customer.contact_person' );
+    ///**/pagedata = pagedata.replace( /\{\{AuftraggeberName\}\}/ , '' );//'opinion.customer.contact_person' );
     pagedata = pagedata.replace( /\{\{street\}\}/ , opinion.customer.street );
     pagedata = pagedata.replace( /\{\{postal_city\}\}/ , (opinion.customer.postalCode + ' ' + opinion.customer.city) );
 
@@ -600,17 +600,37 @@ const GetBody = ( opinion, opinionDetails , detailsTodoList , hasAbbreviationsPa
          + '</body>';
 }
 
-/*const escapeRegExp = ( rexp ) => {
-    return rexp.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
-}*/
-
 const ReplaceOpinionVariables = ( htmlText , opinion ) => {
+    // Die im Gutachten selbst definierten Variablen.
     if ( opinion.userVariables
       && opinion.userVariables.length > 0 ) {
         opinion.userVariables.forEach( element => {
-            htmlText = htmlText.replace( new RegExp( '\{\{' + helper.escapeRegExp( element.name ) + '\}\}' , 'g' ) , element.value );
+            htmlText = htmlText
+            .replace( new RegExp( '\{\{' + helper.escapeRegExp( element.name ) + '\}\}' , 'g' ) , element.value );
         });
     }
+
+    //-----
+    // Sind Variablen ersetzt worden? Wenn nein, Defaultwerte verwenden:
+    // Seite 1.
+    const docTitle = 'Gutachtliche Stellungnahme';
+    const docSubTitle = 'Sicherheit in der Elektrotechnik';
+    const docAdditionalText1 = 'Schwerpunkt ist der Aufbau einer rechtssicheren';
+    const docAdditionalText2 = 'Organisationsstruktur im Bereich der Elektrotechnik';
+    const doclocationLongText = '';
+
+    htmlText = htmlText
+    .replace( /\{\{Dokument_Titel\}\}/ , docTitle )
+    .replace( /\{\{Dokument_Untertitel\}\}/ , docSubTitle )
+    .replace( /\{\{Dokument_ZusatztextZeile1\}\}/ , docAdditionalText1 )
+    .replace( /\{\{Dokument_ZusatztextZeile2\}\}/ , docAdditionalText2 )
+    .replace( /\{\{Dokument_StandortLangtext\}\}/ , doclocationLongText );
+
+    // Name des Auftraggebers auf Seite 2.
+    htmlText = htmlText
+    .replace( /\{\{AuftraggeberName\}\}/ , '' );//'opinion.customer.contact_person' );
+    //-----
+
     return htmlText;
 }
 
