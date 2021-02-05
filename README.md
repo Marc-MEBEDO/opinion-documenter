@@ -35,12 +35,14 @@ Ansonsten ''.
 ### Parameter der Funktion pdfCreate
 
 Die ersten 4 Parameter der Funktion pdfCreate sind verpflichtend und beinhalten:
+
 1. opinion: Das Gutachten "Objekt".
 2. details: Das Array der zum Gutachten gehörenden Gutachten-Details.
 3. detailsTodolist: Das Array der Gutachten-Details, das alle im Gutachten enthaltenen (aktiven) Fragen mit Handlungsbedarf enthält.
 4. pdfPath: Pfad, in den das zu erstellende PDF Dokument geschrieben werden soll. Als Dateiname wird automatisch "{opinion._id}.pdf" gesetzt.
 
-Paramteter 5-8 sind optional und beinhalten.
+Paramteter 5-8 sind optional und beinhalten:
+
 5. hasAbbreviationsPage: default: true - Bool, der angibt, ob im Dokument das fest hinterlegte Abkürzungsvereichnis enthalten sein soll. 
 6. hasToC: default: true - Bool, der angibt, ob Inhaltsverzeichnis generiert werden soll.
 7. print: default: false - Bool, der angibt, ob PDF für Ausdruck (=true) gedacht ist oder nicht (=false).
@@ -64,12 +66,12 @@ Folgende internen Variablen werden verwendet bzw. können im Dokument verwendet 
 #### Zusätzliche Variablen
 Folgende Variablen können vom Anwender genutzt werden zum Überschreiben der default-Werte:
 
-##### Für das "Deckblatt" (1. Seite) des Dokuments:
-* {{Dokument_Titel}} - default: 'Gutachtliche Stellungnahme'
-* {{Dokument_Untertitel}} - default: 'Sicherheit in der Elektrotechnik'
-* {{Dokument_ZusatztextZeile1}} - default: 'Schwerpunkt ist der Aufbau einer rechtssicheren'
-* {{Dokument_ZusatztextZeile2}} - default: 'Organisationsstruktur im Bereich der Elektrotechnik'
-* {{Dokument_StandortLangtext}} - default: ''. Empfehlung, falls benötigt: 'am Standort xyz'
+##### Für das "Deckblatt" (1. Seite) des Dokuments
+* {{!Titel}} - default: 'Gutachtliche Stellungnahme'
+* {{!Untertitel}} - default: 'Sicherheit in der Elektrotechnik'
+* {{!ZusatztextZeile1}} - default: 'Schwerpunkt ist der Aufbau einer rechtssicheren'
+* {{!ZusatztextZeile2}} - default: 'Organisationsstruktur im Bereich der Elektrotechnik'
+* {{!StandortLangtext}} - default: ''. Empfehlung, falls benötigt: 'am Standort xyz'
 
-##### Für die 2. Seite des Dokuments für den Namen des Ansprechpartners des Auftraggebers:
-* {{AuftraggeberName}} - default: ''
+##### Für die 2. Seite des Dokuments für den Namen des Ansprechpartners des Auftraggebers
+* {{!AuftraggeberName}} - default: ''

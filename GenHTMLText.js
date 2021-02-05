@@ -618,15 +618,15 @@ const ReplaceOpinionVariables = ( htmlText , opinion ) => {
     const doclocationLongText = '';
 
     htmlText = htmlText
-    .replace( /\{\{Dokument_Titel\}\}/ , docTitle )
-    .replace( /\{\{Dokument_Untertitel\}\}/ , docSubTitle )
-    .replace( /\{\{Dokument_ZusatztextZeile1\}\}/ , docAdditionalText1 )
-    .replace( /\{\{Dokument_ZusatztextZeile2\}\}/ , docAdditionalText2 )
-    .replace( /\{\{Dokument_StandortLangtext\}\}/ , doclocationLongText );
+    .replace( /\{\{!Titel\}\}/ , docTitle )
+    .replace( /\{\{!Untertitel\}\}/ , docSubTitle )
+    .replace( /\{\{!ZusatztextZeile1\}\}/ , docAdditionalText1 )
+    .replace( /\{\{!ZusatztextZeile2\}\}/ , docAdditionalText2 )
+    .replace( /\{\{!StandortLangtext\}\}/ , doclocationLongText );
 
     // Name des Auftraggebers auf Seite 2.
     htmlText = htmlText
-    .replace( /\{\{AuftraggeberName\}\}/ , '' );//'opinion.customer.contact_person' );
+    .replace( /\{\{!AuftraggeberName\}\}/ , '' );//'opinion.customer.contact_person' );
     //-----
 
     return htmlText;
