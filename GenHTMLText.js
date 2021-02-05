@@ -1,16 +1,14 @@
-const fs = require('fs');
+const fs = require( 'fs' );
 const path = require( 'path' );
-const helper = require('./helper');
+const helper = require( './helper' );
 
 const ToC_constString = 'Inhaltsverzeichnis';
 const AbbreviationsPage_constString = 'Abkürzungsverzeichnis';
 
 const GetFirstPage = () => {
-    let pathFile = path.join( __dirname , 'Files' , 'page1.html' );
-    let pagedata = fs.readFileSync( pathFile , 'utf-8' );
-    //let pagedata = fs.readFileSync( './Files/page1.html' , 'utf-8' );
+    const pathFile = path.join( __dirname , 'Files' , 'page1.html' );
+    const pagedata = fs.readFileSync( pathFile , 'utf-8' );
     //pagedata = pagedata.replace( /\{\{opinionNo\}\}/g , opinion.opinionNo );
-
     return pagedata;
 }
 
@@ -85,24 +83,27 @@ const GetExpert = ( expert , long = true ) => {
 }
 
 const GetSecondPage = ( opinion ) => {
-    let pathFile = path.join( __dirname , 'Files' , 'page2.html' );
+    const pathFile = path.join( __dirname , 'Files' , 'page2.html' );
     let pagedata = fs.readFileSync( pathFile , 'utf-8' );
     //let pagedata = fs.readFileSync( './Files/page2.html' , 'utf-8' );
     //pagedata = pagedata.replace( /\{\{company_name\}\}/ , opinion.customer.name );
     ///**/pagedata = pagedata.replace( /\{\{AuftraggeberName\}\}/ , '' );//'opinion.customer.contact_person' );
-    pagedata = pagedata.replace( /\{\{street\}\}/ , opinion.customer.street );
-    pagedata = pagedata.replace( /\{\{postal_city\}\}/ , (opinion.customer.postalCode + ' ' + opinion.customer.city) );
+    pagedata = pagedata
+    .replace( /\{\{street\}\}/ , opinion.customer.street )
+    .replace( /\{\{postal_city\}\}/ , (opinion.customer.postalCode + ' ' + opinion.customer.city) );
 
     // Datumsangaben.
-    let moment = require( 'moment' );
-    let useMomentFormat = true;
+    const useMomentFormat = true;// Wird hier fest gesetzt.
     if ( useMomentFormat ) {
-        pagedata = pagedata.replace( /\{\{PRJ_Datum_Start\}\}/ , moment( opinion.dateFrom ).format( 'DD.MM.YYYY' ) );
-        pagedata = pagedata.replace( /\{\{PRJ_DATUM_PLAN\}\}/  , moment( opinion.dateTill ).format( 'DD.MM.YYYY' ) );
+        const moment = require( 'moment' );
+        pagedata = pagedata
+        .replace( /\{\{PRJ_Datum_Start\}\}/ , moment( opinion.dateFrom ).format( 'DD.MM.YYYY' ) )
+        .replace( /\{\{PRJ_DATUM_PLAN\}\}/  , moment( opinion.dateTill ).format( 'DD.MM.YYYY' ) );
     }
     else {
-        pagedata = pagedata.replace( /\{\{PRJ_Datum_Start\}\}/ , opinion.dateFrom.toLocaleDateString('de-DE') );
-        pagedata = pagedata.replace( /\{\{PRJ_DATUM_PLAN\}\}/  , opinion.dateTill.toLocaleDateString('de-DE') );
+        pagedata = pagedata
+        .replace( /\{\{PRJ_Datum_Start\}\}/ , opinion.dateFrom.toLocaleDateString( 'de-DE' ) )
+        .replace( /\{\{PRJ_DATUM_PLAN\}\}/  , opinion.dateTill.toLocaleDateString( 'de-DE' ) );
     }
     
     // Teilnehmer.
@@ -118,16 +119,16 @@ const GetSecondPage = ( opinion ) => {
     pagedata = pagedata.replace( '{{participants}}' , help );
 
     // Sachverständige.
-    pagedata = pagedata.replace( /\{\{expertno1\}\}/ , GetExpert( opinion.expert1 ) );
-    pagedata = pagedata.replace( /\{\{expertno2\}\}/ , GetExpert( opinion.expert2 ) );
+    pagedata = pagedata
+    .replace( /\{\{expertno1\}\}/ , GetExpert( opinion.expert1 ) )
+    .replace( /\{\{expertno2\}\}/ , GetExpert( opinion.expert2 ) );
 
     return pagedata;
 }
 
 const GetAbbreviationsPage = () => {
-    let pathFile = path.join( __dirname , 'Files' , 'page_abbreviations.html' );
-    let pagedata = fs.readFileSync( pathFile , 'utf-8' );
-
+    const pathFile = path.join( __dirname , 'Files' , 'page_abbreviations.html' );
+    const pagedata = fs.readFileSync( pathFile , 'utf-8' );
     return pagedata;
 }
 
@@ -182,7 +183,7 @@ const GetChildrenToc = ( opDetails , parentID , chapter , print , ToCPageNos , w
     //let title = '';
     // "Holt" alle Children zum übergebenen Gutachten-Detail (=parentID).
     let subChapterNo = 1;
-    let detailArray = opDetails.filter( opDetail => {
+    const detailArray = opDetails.filter( opDetail => {
         return ( opDetail
                 && !opDetail.deleted
                 && !opDetail.finallyRemoved
@@ -205,7 +206,7 @@ const GetChildrenToc = ( opDetails , parentID , chapter , print , ToCPageNos , w
         if ( ToCPageNos
           && !writePageNoToArray ) {
             // Seitennummern (der IDs) ins Inhaltsverzeichnis schreiben.
-            let pageNoElement = headingsArray.find( (element) => {
+            const pageNoElement = headingsArray.find( (element) => {
                 //return ( element.name == `${chapter}.${subChapterNo} ${currentDetailValue.printTitle}` );
                 return ( element.name == currentDetailValue._id );
             });
@@ -254,7 +255,6 @@ const RenderPictures = ( opDetail ) => {
     if ( opDetail.type == 'PICTURE'
       && opDetail.files 
       && opDetail.files.length > 0 ) {
-        let pic;
         opDetail.files.forEach( file => {
             if ( !helper.EmptyString( file.path )
               && !helper.EmptyString( file.extension )
@@ -262,7 +262,7 @@ const RenderPictures = ( opDetail ) => {
                 || file.extension == 'jpeg'
                 || file.extension == 'png' ) ) {
                 if ( fs.existsSync( file.path ) ) {
-                    pic = fs.readFileSync( file.path );
+                    const pic = fs.readFileSync( file.path );
                     //text += `<img style="width: 8cm;" alt="[Das hinterlegte Bild \'${file.name}\' kann nicht geladen werden.]" src="data:image/png;base64,${Buffer.from( pic ).toString('base64')}">`;
                     text += `<img alt="[Das hinterlegte Bild \'${file.name}\' kann nicht geladen werden.]" src="data:image/png;base64,${Buffer.from( pic ).toString('base64')}">`;
                 }
@@ -276,7 +276,7 @@ const RenderPictures = ( opDetail ) => {
 
 const GetMainChapterNo = ( chapter ) => {
     chapter = String( chapter );
-    let index = chapter.indexOf( '.' , 0 )
+    const index = chapter.indexOf( '.' , 0 )
     if ( index > 0 )
         chapter = chapter.slice( 0 , index );
     return chapter;
@@ -290,7 +290,7 @@ const GetTodoItems = ( detailsTodoList , /*chapter ,*/ questionChapters ) => {
         return '';
     let actionHead = '';
     let text = '';
-    const actionCodes = require('./constData/actioncodes').actionCodes;
+    const actionCodes = require( './constData/actioncodes' ).actionCodes;
     detailsTodoList.forEach( ( item , index ) => {
         if ( item.actionCode
           && actionHead != item.actionCode ) {
@@ -319,7 +319,7 @@ const GetChildren = ( opDetails , detailsTodoList , parentID , chapter , tmp , q
     let text = '';
     let subChapterNo = 1;
     let questSubChapterNo = 1;//Für die Kapitelnummern der Fragen für die Todo-List.
-    let detailArray = opDetails.filter( opDetail => {
+    const detailArray = opDetails.filter( opDetail => {
         return ( opDetail
               && !opDetail.deleted
               && !opDetail.finallyRemoved
@@ -328,8 +328,7 @@ const GetChildren = ( opDetails , detailsTodoList , parentID , chapter , tmp , q
     if ( detailArray.length == 0 )
         return ''; 
 
-    let htmlContent;
-    let canHaveChildren = false;
+    let htmlContent = '';
     detailArray.forEach( ( currentDetailValue , index ) => {
         if ( currentDetailValue.type == 'PAGEBREAK' ) {
             if ( !currentDetailValue.deleted
@@ -337,7 +336,7 @@ const GetChildren = ( opDetails , detailsTodoList , parentID , chapter , tmp , q
                 text += '<div class="page-breaks" />';
         }
         else {
-            canHaveChildren = CanHaveChildren( currentDetailValue );
+            const canHaveChildren = CanHaveChildren( currentDetailValue );
             //text += `<div class="${GetPageClass( currentDetailValue )}">`;
             //text += '<div>';
             //if ( !helper.EmptyString( currentDetailValue.htmlContent ) && currentDetailValue.type != 'PICTURE' ) {
@@ -448,7 +447,7 @@ const GetDynContent = ( opinionDetails , detailsTodoList , hasAbbreviationsPage 
             if ( ToCPageNos
               && !writePageNoToArray ) {
                 // Seitennummern ins Inhaltsverzeichnis schreiben.
-                let pageNoElement = headingsArray.find( (element) => {
+                const pageNoElement = headingsArray.find( ( element ) => {
                     return ( element.name == AbbreviationsPage_constString );
                 });
                 if ( pageNoElement )
@@ -485,7 +484,7 @@ const GetDynContent = ( opinionDetails , detailsTodoList , hasAbbreviationsPage 
                 if ( ToCPageNos
                   && !writePageNoToArray ) {
                     // Seitennummern (der IDs) ins Inhaltsverzeichnis schreiben.
-                    let pageNoElement = headingsArray.find( (element) => {
+                    const pageNoElement = headingsArray.find( ( element ) => {
                         //return ( element.name == `${chapterNo}. ${currentDetail.printTitle}` );
                         return ( element.name == currentDetail._id );
                     });
@@ -527,8 +526,7 @@ const GetDynContent = ( opinionDetails , detailsTodoList , hasAbbreviationsPage 
 
     // 2. Durchgang für Inhalt: Einzelne Kapitel.
     chapterNo = 1;
-    let htmlContent;
-    let canHaveChildren = false;
+    let htmlContent = '';
     let questionChapters = [];// Für die Abschlussbetrachtung.
     opDetailLayerA.forEach( ( currentDetail , index ) => {
         if ( currentDetail.type == 'PAGEBREAK' ) {
@@ -537,7 +535,7 @@ const GetDynContent = ( opinionDetails , detailsTodoList , hasAbbreviationsPage 
                 text += '<div class="page-breaks" />';
         }
         else {
-            canHaveChildren = CanHaveChildren( currentDetail );
+            const canHaveChildren = CanHaveChildren( currentDetail );
             //text += `<div class="${GetPageClass( currentDetail )}">`;
             //text += '<div>'
             //if ( !helper.EmptyString( currentDetail.htmlContent ) && currentDetail.type != 'PICTURE' ) {
@@ -641,8 +639,7 @@ const ReplaceInternalVariables = ( htmlText , opinion ) => {
     // ${Gutachtennummer}
     htmlText = htmlText.replace( /\$\{Gutachtennummer\}/g , opinion.opinionNo );
     // ${Druckdatum}
-    let dateStr = helper.GetTodayDateString();
-    htmlText = htmlText.replace( /\$\{Druckdatum\}/g , dateStr );
+    htmlText = htmlText.replace( /\$\{Druckdatum\}/g , helper.GetTodayDateString() );
     // ${GutachterName1}
     htmlText = htmlText.replace( /\$\{GutachterName1\}/g , GetExpert( opinion.expert1 , false ) );
     // ${GutachterName2}

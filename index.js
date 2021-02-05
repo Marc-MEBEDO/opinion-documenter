@@ -1,35 +1,31 @@
+let lastPageNo = '';
+const helper = require( './helper' );
+const fs = require( 'fs' );
 
 /*const createHTMLFile = ( iHTMLText ) => {
     // HTML Datei schreiben.
-    let fs = require( 'fs' );
     fs.writeFile( './result/html5-to-pdf.html' , iHTMLText , err => {
         if ( err )
             return console.log( err );
     });
 }*/
 
-let lastPageNo = '';
-const helper = require('./helper');
-const fs = require( 'fs' );
-
 const createPDFFile_html5_to_pdf = async ( iPathFile , iHTMLText ) => {
     // Benötigte Dateien lesen.
-    //let fs = require( 'fs' );
-    let path = require( 'path' );
-    let pathFile = path.join( __dirname , 'Files' , 'header_image.html' );
-    let header_image = fs.readFileSync( pathFile , 'utf-8' );    
-    // Aktuelles Datum für Footer selbst "holen".
-    let dateStr = helper.GetTodayDateString();
+    const path = require( 'path' );
+    const pathFile = path.join( __dirname , 'Files' , 'header_image.html' );
+    const header_image = fs.readFileSync( pathFile , 'utf-8' );    
+    // Aktuelles Datum für Footer.
+    const dateStr = helper.GetTodayDateString();
 
     // PDF Datei schreiben mit 'html5-to-pdf'.
-    let _HTML5ToPDF = require( 'html5-to-pdf' ); 
+    const _HTML5ToPDF = require( 'html5-to-pdf' ); 
 
     return new Promise( async ( resolve , reject ) => {
-        let html5ToPDF = new _HTML5ToPDF({
+        const html5ToPDF = new _HTML5ToPDF({
             inputBody: iHTMLText,
-            //inputPath: path.join(__dirname , 'tmp' , 'test.html' ),
             //outputPath: iPathFile,
-            templatePath: path.join( __dirname , '' , 'Files' ),
+            templatePath: path.join( __dirname , 'Files' ),
             include: [
                 path.join( __dirname , 'Files' , 'basic.css' ),
                 path.join( __dirname , 'Files' , 'custom-margin.css' ),
@@ -52,13 +48,6 @@ const createPDFFile_html5_to_pdf = async ( iPathFile , iHTMLText ) => {
                     </div>`,
                     //<td style="width: 20%;"><img style="width: 180px;" src="file:/C:/Users/marc.tomaschoff/meteor/html-create/Files/MEBEDO_LOGO_PRINT_CMYK.jpg" alt="Page Header"></td>
                 footerTemplate:
-                    //`<div id="footer-template" style="font-family:Arial; font-size:10px; padding-left:1px; background-color:rgb(245,155,19); -webkit-print-color-adjust: exact">
-                    //`<div id="footer-template" style="height:75px;position: absolute;top:auto;left:0px;right:0px;left:0px;background-color:red;">
-                    //<table width = '590mm'>
-                    //`<div id="footer-template" style="position: absolute;top:auto;left:0px;right:0px;background-color:red;font-family:Arial; font-size:10px;-webkit-print-color-adjust: exact">
-                    
-                    //top:...
-                    //`<div id="footer-template" style="position:absolute; height:8mm; top:auto; left:0mm; right:0mm; font-family:Arial; font-size:10px; padding-left:1px; background-color:rgb(245,155,19); -webkit-print-color-adjust: exact">
                     `<div id="footer-template" style="position:absolute; height:16mm; top:215mm; left:0mm; right:0mm; font-family:Arial; font-size:10px; padding-left:1px; background-color:rgb(245,155,19); -webkit-print-color-adjust: exact">
                         <table style="position:absolute; width:65%; height:7mm; left:9mm;">
                             <tr>
@@ -68,17 +57,6 @@ const createPDFFile_html5_to_pdf = async ( iPathFile , iHTMLText ) => {
                             </tr>
                         </table>
                     </div>`,
-                /*margin: {
-                    top: '25mm',
-                    //top: '100px',
-                    bottom: '16mm',
-                    //bottom: '200px',
-                    //right: '1.27cm',
-                    right: '12.7mm',
-                    left: '0px',
-                    //left: '1.27cm',
-                    //left: '30px',
-                },*/
                 margin: {
                     top: '25mm',
                     bottom: '16mm',
@@ -86,7 +64,7 @@ const createPDFFile_html5_to_pdf = async ( iPathFile , iHTMLText ) => {
                     left: '0mm',
                 },
             },
-            // Versuch die Qualität zu beeinflussen.
+            // Versuch die Qualität zu beeinflussen - ohne Funktion?!.
             /*launchOptions: {
                 defaultViewport: {
                     width: 800,
@@ -98,7 +76,7 @@ const createPDFFile_html5_to_pdf = async ( iPathFile , iHTMLText ) => {
     
         try {
             await html5ToPDF.start();
-            let buf = await html5ToPDF.build();
+            const buf = await html5ToPDF.build();
             await html5ToPDF.close();
             if ( buf )
                 fs.writeFileSync( iPathFile , buf );
@@ -112,23 +90,12 @@ const createPDFFile_html5_to_pdf = async ( iPathFile , iHTMLText ) => {
 
 const readPDF_parse = async ( iTmpPathFile ) => {
     return new Promise( ( then_ , catch_ ) => {
-        //let fs = require( 'fs' );
-        let pdfreader = require( 'pdf-parse' );
-        let dataBuffer = fs.readFileSync( iTmpPathFile );// !!! Hier kein: , 'utf-8' !!!
+        const pdfreader = require( 'pdf-parse' );
+        const dataBuffer = fs.readFileSync( iTmpPathFile );// !!! Hier kein: , 'utf-8' !!!
  
-        //pdfreader( dataBuffer , ( data ) => {
         pdfreader( dataBuffer ).then( function( data ) {
             // number of pages
             lastPageNo = data.numpages;
-            // number of rendered pages
-            //console.log(data.numrender);
-            // PDF info
-            //console.log(data.info);
-            // PDF metadata
-            //console.log(data.metadata); 
-            // PDF.js version
-            // check https://mozilla.github.io/pdf.js/getting_started/
-            //console.log(data.version);
             // PDF text
             then_( data.text );
         })
@@ -146,24 +113,23 @@ const SetPages = ( arrHead , text ) => {
     text = text.replace( /\n/g , '' );
     // Dann den Text so kürzen, dass erst der Text nach dem Inhaltsverzeichnis enthalten ist. Ansonsten würden im match die Einträge im Inhaltsverzeichnis gefunden.
     let exp = new RegExp( helper.escapeRegExp( arrHead[ arrHead.length - 1 ].name ) + '.*?Seite .*? von' );//, 'g' );
-    let index = text.search( exp );
+    const index = text.search( exp );
     if ( index == -1 )
         return;
     if ( text.length <= ( index + arrHead[ arrHead.length - 1 ].name.length ) )
         return;
     
     text = text.slice( index + arrHead[ arrHead.length - 1 ].name.length );
-    let match = '';
     arrHead.forEach( ( element ) => {
         exp = new RegExp( helper.escapeRegExp( element.name ) + '.*?Seite (.*?) von' );//, 'g' );
-        match = text.match( exp );
+        const match = text.match( exp );
         if ( match
           && match.length > 1 ) {
-            let pageNo = match[ 1 ];
+            const pageNo = match[ 1 ];
             if ( pageNo > 3 ) {
                 element.page = pageNo - 1;
                 /*// Text vor der Fundstelle rauslöschen.
-                // Das ist aber nicht notwendig, da nach den IDs gesucht wird und damit Mehrfachfunde ausgeschlossen sein sollten.
+                // Das ist nicht notwendig, da nach den IDs gesucht wird und damit Mehrfachfunde ausgeschlossen sein sollten.
                 index = text.search( exp );
                 if ( index > -1 )
                     text = text.slice( index + element.name.length );*/
@@ -207,19 +173,19 @@ const ModifyArray = ( headArray ) => {
 const pdfCreate = async ( opinion , opinionDetails , detailsTodoList , path , hasAbbreviationsPage = true , hasToC = true , print = false , ToCPageNos = true ) => {
     if ( helper.EmptyString( path ) ) {
         // PDF Pfad muss angegeben sein.
-        console.log( 'error: Kein Dateipfad des PDF Dokuments übergeben!\nEs erfolgt KEINE Ausgabe.' );
+        console.log( 'ERROR: Kein Dateipfad des PDF Dokuments übergeben!\nEs erfolgt KEINE Ausgabe.' );
     }
     else if ( !opinion ) {
         // opinion darf nicht null sein. opinionDetails darf null sein, dann sind eben keine Gutachten-Details in der Ausgabe enthalten.
-        console.log( 'error: Keine opinion (Gutachten) übergeben!\nEs erfolgt KEINE Ausgabe.' );
+        console.log( 'ERROR: Keine opinion (Gutachten) übergeben!\nEs erfolgt KEINE Ausgabe.' );
     }
     else if ( helper.EmptyString( opinion._id ) ) {
         // opinionId darf nicht null oder leer sein.
-        console.log( 'error: Es ist keine gültige Gutachten ID im übergebenen Gutachten vorhanden!\nEs erfolgt KEINE Ausgabe.' );
+        console.log( 'ERROR: Es ist keine gültige Gutachten ID im übergebenen Gutachten vorhanden!\nEs erfolgt KEINE Ausgabe.' );
     }
     else {
         let htmlText = '';
-        let genHTMLText = require( './GenHTMLText' );
+        const genHTMLText = require( './GenHTMLText' );
         // Zunächst den HTML Text generieren.
         let headingsArray = [];
         const pathFile = helper.GetPDFPathFile( path , opinion._id );

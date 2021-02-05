@@ -8,8 +8,6 @@ async function main() {
     let detailsTodoList = [];
     opinionDetails.forEach( currentDetailValue => {
         if ( currentDetailValue.type == 'HEADING' )
-          /*|| currentDetailValue.type == 'QUESTION'
-          || currentDetailValue.type == 'ANSWER' )*/
             currentDetailValue.showInToC = true;
         else if ( currentDetailValue.type == 'QUESTION' )
             detailsTodoList.push( currentDetailValue );
@@ -20,7 +18,6 @@ async function main() {
     let path = require( 'path' );
     try {
         await gutachten.pdfCreate( opinion , opinionDetails , detailsTodoList , path.join( __dirname , 'result' ) );///**/ , 1 , 1 , 0 , 0 );///**/= nur für Tests
-        //await gutachten.pdfCreate( opinion , opinionDetails , path.join( __dirname , 'result' , 'html5-to-pdf.pdf' ) );///**/ , 1 , 1 , 0 , 0 );///**/= nur für Tests
         console.log( 'done' );
     }    
     catch( err ) {
