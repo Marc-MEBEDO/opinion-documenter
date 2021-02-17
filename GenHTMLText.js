@@ -343,7 +343,9 @@ const GetChildren = ( opDetails , detailsTodoList , parentID , chapter , tmp , q
             if ( !helper.EmptyString( currentDetailValue.htmlContent ) ) {
                 htmlContent = currentDetailValue.htmlContent
                 .replace( /\{\{XparentPosition\}\}/ , `${chapter}.` )
-                .replace( /\{\{Xposition\}\}/ , `${subChapterNo}` );
+                .replace( /\{\{printParentPosition\}\}/ , `${chapter}.` )
+                .replace( /\{\{Xposition\}\}/ , `${subChapterNo}` )
+                .replace( /\{\{printPosition\}\}/ , `${questSubChapterNo}` );
                 if ( tmp && !helper.EmptyString( currentDetailValue.printTitle ) )
                     htmlContent = htmlContent.replace( new RegExp( helper.escapeRegExp( currentDetailValue.printTitle ) ) , currentDetailValue._id );
                 if ( currentDetailValue.type == 'PICTURECONTAINER' )
@@ -542,7 +544,9 @@ const GetDynContent = ( opinionDetails , detailsTodoList , hasAbbreviationsPage 
             if ( !helper.EmptyString( currentDetail.htmlContent ) ) {
                 htmlContent = currentDetail.htmlContent
                 .replace( /\{\{XparentPosition\}\}/ , '' )
-                .replace( /\{\{Xposition\}\}/ , `${chapterNo}.` );
+                .replace( /\{\{printParentPosition\}\}/ , '' )
+                .replace( /\{\{Xposition\}\}/ , `${chapterNo}.` )
+                .replace( /\{\{printPosition\}\}/ , `${chapterNo}.` );
                 if ( tmp && !helper.EmptyString( currentDetail.printTitle ) )
                     htmlContent = htmlContent.replace( new RegExp( helper.escapeRegExp( currentDetail.printTitle ) ) , currentDetail._id );
                 if ( currentDetail.type == 'PICTURECONTAINER' )
