@@ -19,8 +19,9 @@ const opinionDocumenter = require( 'opinion-documenter' );
 let opinion = {};
 let details = [];
 let detailsTodolist = [];
+let images = [];
 let pdfPath = '';
-const filename = await opinionDocumenter.pdfCreate( opinion , details , detailsTodolist , pdfPath );
+const filename = await opinionDocumenter.pdfCreate( opinion , details , detailsTodolist , images , pdfPath );
 ```
 
 ---
@@ -39,17 +40,18 @@ Die ersten 4 Parameter der Funktion pdfCreate sind verpflichtend und beinhalten:
 1. opinion: Das Gutachten "Objekt".
 2. details: Das Array der zum Gutachten gehörenden Gutachten-Details.
 3. detailsTodolist: Das Array der Gutachten-Details, das alle im Gutachten enthaltenen (aktiven) Fragen mit Handlungsbedarf enthält.
-4. pdfPath: Pfad, in den das zu erstellende PDF Dokument geschrieben werden soll. Als Dateiname wird automatisch "{opinion._id}.pdf" gesetzt.
+4. images: Das Array der Bilder, die im Gutachten enthalten sind.
+5. pdfPath: Pfad, in den das zu erstellende PDF Dokument geschrieben werden soll. Als Dateiname wird automatisch "{opinion._id}.pdf" gesetzt.
 
-Paramteter 5-8 sind optional und beinhalten:
+Paramteter 6-9 sind optional und beinhalten:
 
-5. hasAbbreviationsPage: default: true - Bool, der angibt, ob im Dokument das fest hinterlegte Abkürzungsvereichnis enthalten sein soll. 
-6. hasToC: default: true - Bool, der angibt, ob Inhaltsverzeichnis generiert werden soll.
-7. print: default: false - Bool, der angibt, ob PDF für Ausdruck (=true) gedacht ist oder nicht (=false).
+6. hasAbbreviationsPage: default: true - Bool, der angibt, ob im Dokument das fest hinterlegte Abkürzungsvereichnis enthalten sein soll. 
+7. hasToC: default: true - Bool, der angibt, ob Inhaltsverzeichnis generiert werden soll.
+8. print: default: false - Bool, der angibt, ob PDF für Ausdruck (=true) gedacht ist oder nicht (=false).
 Wenn print == false (also rein für digitale Betrachtung), dann werden im Inhaltsverzeichnis Links eingefügt.
 Bei print == true keine Links.
 Nur relevant, wenn hasToC == true.
-8. ToCPageNos: default: true - Bool, der angibt, ob im Inhaltsverzeichnis Seitenzahlen angegeben werden sollen.
+9. ToCPageNos: default: true - Bool, der angibt, ob im Inhaltsverzeichnis Seitenzahlen angegeben werden sollen.
 Nur relevant, wenn hasToC == true.
 
 ### Variablen

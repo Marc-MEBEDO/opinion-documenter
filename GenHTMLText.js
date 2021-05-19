@@ -250,25 +250,66 @@ const CanHaveChildren = ( opDetail ) => {
         return false;
 }
 
-const RenderPictures = ( opDetail ) => {
+const RenderPictures = ( opDetail , images ) => {
     let text = '';
     if ( opDetail.type == 'PICTURE'
       && opDetail.files 
       && opDetail.files.length > 0 ) {
         opDetail.files.forEach( file => {
-            if ( !helper.EmptyString( file.path )
-              && !helper.EmptyString( file.extension )
-              && ( file.extension == 'jpg'
-                || file.extension == 'jpeg'
-                || file.extension == 'png' ) ) {
-                if ( fs.existsSync( file.path ) ) {
-                    const pic = fs.readFileSync( file.path );
+            let filePath = file.path;
+            let fileExtension = file.extension;
+
+            if ( images
+              && images.length > 0 ) {
+                const image = images.find( ( element ) => {
+                    return ( element._id == file._id );
+                });
+                if ( image 
+                  && image.meta
+                  && !helper.EmptyString( image.meta.annotStateImageId ) ) {
+                    // Geänderte/Markierte Bilder sind immer als jpg gespeichert (von markerjs)!
+                    filePath = image._storagePath + '/' + image.meta.annotStateImageId + '.jpg';//image.extensionWithDot;
+                    fileExtension = 'jpg';//image.extension;
+                }
+            }
+
+            if ( !helper.EmptyString( filePath )
+              && !helper.EmptyString( fileExtension )
+              && ( fileExtension == 'jpg'
+                || fileExtension == 'jpeg'
+                || fileExtension == 'png' ) ) {
+                  if ( fs.existsSync( filePath ) ) {
+                      const pic = fs.readFileSync( filePath );
+                      //text += `<img style="width: 8cm;" alt="[Das hinterlegte Bild \'${file.name}\' kann nicht geladen werden.]" src="data:image/png;base64,${Buffer.from( pic ).toString('base64')}">`;
+                      text += `<img alt="[Das hinterlegte Bild \'${file.name}\' kann nicht geladen werden.]" src="data:image/${fileExtension};base64,${Buffer.from( pic ).toString('base64')}">`;
+                  }
+                  else
+                      console.log( `Bilddatei \'${file.name}\' nicht vorhanden.` );
+              }
+
+            //-----------------------
+            //console.log( file );
+            /*let filePath = file.path;
+            let fileExtension = file.extension;
+            //let fileName = file.name;
+            if ( file.meta
+              && file.meta.annotStateImageID ) {
+                filePath = file._storagePath + file.meta.annotStateImageID + file.extensionWithDot;
+            }
+
+            if ( !helper.EmptyString( filePath )
+              && !helper.EmptyString( fileExtension )
+              && ( fileExtension == 'jpg'
+                || fileExtension == 'jpeg'
+                || fileExtension == 'png' ) ) {
+                if ( fs.existsSync( filePath ) ) {
+                    const pic = fs.readFileSync( filePath );
                     //text += `<img style="width: 8cm;" alt="[Das hinterlegte Bild \'${file.name}\' kann nicht geladen werden.]" src="data:image/png;base64,${Buffer.from( pic ).toString('base64')}">`;
-                    text += `<img alt="[Das hinterlegte Bild \'${file.name}\' kann nicht geladen werden.]" src="data:image/png;base64,${Buffer.from( pic ).toString('base64')}">`;
+                    text += `<img alt="[Das hinterlegte Bild \'${file.name}\' kann nicht geladen werden.]" src="data:image/${fileExtension};base64,${Buffer.from( pic ).toString('base64')}">`;
                 }
                 else
                     console.log( `Bilddatei \'${file.name}\' nicht vorhanden.` );
-            }
+            }*/
         });
     }
     return text;
@@ -314,7 +355,7 @@ const GetTodoItems = ( detailsTodoList , /*chapter ,*/ questionChapters ) => {
     return text;
 }
 
-const GetChildren = ( opDetails , detailsTodoList , parentID , chapter , tmp , questionChapters ) => {
+const GetChildren = ( opDetails , detailsTodoList , images , parentID , chapter , tmp , questionChapters ) => {
     // "Holt" alle Children zum übergebenen Gutachten-Detail (=parentID).
     let text = '';
     let subChapterNo = 1;
@@ -353,7 +394,7 @@ const GetChildren = ( opDetails , detailsTodoList , parentID , chapter , tmp , q
                 if ( currentDetailValue.type == 'PICTURE' ) {
                     htmlContent = htmlContent
                     .replace( /\{\{index\}\}/ , `${GetMainChapterNo( chapter )}.${index + 1}` )
-                    .replace( /\{\{pictures\}\}/ , RenderPictures( currentDetailValue ) );
+                    .replace( /\{\{pictures\}\}/ , RenderPictures( currentDetailValue , images ) );
                     //.replace( /\{\{pictures\}\}/ , `Bilder...` );
                 }      
                 else if ( currentDetailValue.type == 'TODOLIST' ) {
@@ -362,7 +403,7 @@ const GetChildren = ( opDetails , detailsTodoList , parentID , chapter , tmp , q
                 }
                 if ( canHaveChildren ) {
                     htmlContent = htmlContent
-                    .replace( /\{\{childContent\}\}/ , GetChildren( opDetails , detailsTodoList , currentDetailValue._id , `${chapter}.${subChapterNo}` , tmp , questionChapters ) );
+                    .replace( /\{\{childContent\}\}/ , GetChildren( opDetails , detailsTodoList , images , currentDetailValue._id , `${chapter}.${subChapterNo}` , tmp , questionChapters ) );
                 }
                 text += htmlContent;
 
@@ -397,7 +438,7 @@ const GetChildren = ( opDetails , detailsTodoList , parentID , chapter , tmp , q
     return text;
 }
 
-const GetDynContent = ( opinionDetails , detailsTodoList , hasAbbreviationsPage , hasToC , print , ToCPageNos , headingsArray , tmp ) => {
+const GetDynContent = ( opinionDetails , detailsTodoList , images , hasAbbreviationsPage , hasToC , print , ToCPageNos , headingsArray , tmp ) => {
     // Inhalt ab Seite 3.
     if ( !opinionDetails )
         return '';
@@ -554,7 +595,7 @@ const GetDynContent = ( opinionDetails , detailsTodoList , hasAbbreviationsPage 
                 if ( currentDetail.type == 'PICTURE' ) {
                     htmlContent = htmlContent
                     .replace( /\{\{index\}\}/ , `${chapterNo}.${index + 1}` )
-                    .replace( /\{\{pictures\}\}/ , RenderPictures( currentDetail ) );
+                    .replace( /\{\{pictures\}\}/ , RenderPictures( currentDetail , images ) );
                     //.replace( /\{\{pictures\}\}/ , `Bilder...` );
                 }
                 else if ( currentDetail.type == 'TODOLIST' ) {
@@ -563,7 +604,7 @@ const GetDynContent = ( opinionDetails , detailsTodoList , hasAbbreviationsPage 
                 }
                 if ( canHaveChildren ) {
                     htmlContent = htmlContent
-                    .replace( /\{\{childContent\}\}/ , GetChildren( opinionDetails , detailsTodoList , currentDetail._id , chapterNo , tmp , questionChapters ) );
+                    .replace( /\{\{childContent\}\}/ , GetChildren( opinionDetails , detailsTodoList , images , currentDetail._id , chapterNo , tmp , questionChapters ) );
                 }
                 text += htmlContent;
                 
@@ -594,11 +635,11 @@ const GetDynContent = ( opinionDetails , detailsTodoList , hasAbbreviationsPage 
     return text;
 }
 
-const GetBody = ( opinion, opinionDetails , detailsTodoList , hasAbbreviationsPage , hasToC , print , ToCPageNos , headingsArray , tmp ) => {
+const GetBody = ( opinion, opinionDetails , detailsTodoList , images , hasAbbreviationsPage , hasToC , print , ToCPageNos , headingsArray , tmp ) => {
     return '<body>'
          + GetFirstPage()
          + GetSecondPage( opinion )
-         + GetDynContent( opinionDetails , detailsTodoList , hasAbbreviationsPage , hasToC , print , ToCPageNos , headingsArray , tmp )
+         + GetDynContent( opinionDetails , detailsTodoList , images , hasAbbreviationsPage , hasToC , print , ToCPageNos , headingsArray , tmp )
          + '</body>';
 }
 
@@ -659,8 +700,8 @@ const ReplaceVariables = ( htmlText , opinion ) => {
     return htmlText;
 }
 
-const generateHTMLText = ( opinion , opinionDetails , detailsTodoList , hasAbbreviationsPage , hasToC , print , ToCPageNos , headingsArray , tmp = false ) => {
-    return ReplaceVariables( GetBody( opinion , opinionDetails , detailsTodoList , hasAbbreviationsPage , hasToC , print , ToCPageNos , headingsArray , tmp ) , opinion );
+const generateHTMLText = ( opinion , opinionDetails , detailsTodoList , images , hasAbbreviationsPage , hasToC , print , ToCPageNos , headingsArray , tmp = false ) => {
+    return ReplaceVariables( GetBody( opinion , opinionDetails , detailsTodoList , images , hasAbbreviationsPage , hasToC , print , ToCPageNos , headingsArray , tmp ) , opinion );
 }
 
 module.exports = { generateHTMLText };

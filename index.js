@@ -159,6 +159,7 @@ const ModifyArray = ( headArray ) => {
     opinion:        Das Gutachten "Objekt".
     opinionDetails: Das Array der zum Gutachten gehörenden Gutachten-Details.
     detailsTodoList: Das Array der Gutachten-Details, das alle im Gutachten enthaltenen (aktiven) Fragen mit Handlungsbedarf enthält.
+    images:         Das Array der Bilder, die im Gutachten enthalten sind.
     path:           Pfad, in den das zu erstellendes PDF Dokument geschrieben werden soll.
                     Als Dateiname wird automatisch "{opinion._id}.pdf" gesetzt.
     hasAbbreviationsPage: default: true - Bool, der angibt, ob im Dokument das fest hinterlegte Abkürzungsvereichnis enthalten sein soll.
@@ -170,7 +171,7 @@ const ModifyArray = ( headArray ) => {
     ToCPageNos:     Bool, der angibt, ob im Inhaltsverzeichnis Seitenzahlen angegeben werden sollen.
                     Nur relevant, wenn hasToC == true.
 */
-const pdfCreate = async ( opinion , opinionDetails , detailsTodoList , path , hasAbbreviationsPage = true , hasToC = true , print = false , ToCPageNos = true ) => {
+const pdfCreate = async ( opinion , opinionDetails , detailsTodoList , images , path , hasAbbreviationsPage = true , hasToC = true , print = false , ToCPageNos = true ) => {
     if ( helper.EmptyString( path ) ) {
         // PDF Pfad muss angegeben sein.
         console.log( 'ERROR: Kein Dateipfad des PDF Dokuments übergeben!\nEs erfolgt KEINE Ausgabe.' );
@@ -192,7 +193,7 @@ const pdfCreate = async ( opinion , opinionDetails , detailsTodoList , path , ha
         if ( hasToC && ToCPageNos ) {
             // Mit Inhaltverzeichnis und Seitenzahlen.
             try {
-                htmlText = genHTMLText.generateHTMLText( opinion , opinionDetails , detailsTodoList , hasAbbreviationsPage , hasToC , print , ToCPageNos , headingsArray , true );
+                htmlText = genHTMLText.generateHTMLText( opinion , opinionDetails , detailsTodoList , images , hasAbbreviationsPage , hasToC , print , ToCPageNos , headingsArray , true );
                 // HTML Datei schreiben für 'html5-to-pdf'.
                 //createHTMLFile( htmlText );
 
@@ -213,7 +214,7 @@ const pdfCreate = async ( opinion , opinionDetails , detailsTodoList , path , ha
                 SetPages( headingsArray , result );
                 ModifyArray( headingsArray );
                 // HTML Text neu generieren mit Seitenzahlen.
-                htmlText = genHTMLText.generateHTMLText( opinion , opinionDetails , detailsTodoList , hasAbbreviationsPage , hasToC , print , ToCPageNos , headingsArray );
+                htmlText = genHTMLText.generateHTMLText( opinion , opinionDetails , detailsTodoList , images , hasAbbreviationsPage , hasToC , print , ToCPageNos , headingsArray );
                 // HTML Datei final schreiben für 'html5-to-pdf'.
                 //createHTMLFile( htmlText );
                 // PDF Datei final schreiben mit 'html5-to-pdf'.
@@ -226,7 +227,7 @@ const pdfCreate = async ( opinion , opinionDetails , detailsTodoList , path , ha
         }
         else {
             try {
-                htmlText = genHTMLText.generateHTMLText( opinion , opinionDetails , detailsTodoList , hasAbbreviationsPage , hasToC , print , ToCPageNos , headingsArray );
+                htmlText = genHTMLText.generateHTMLText( opinion , opinionDetails , detailsTodoList , images , hasAbbreviationsPage , hasToC , print , ToCPageNos , headingsArray );
                 // HTML Datei schreiben für 'html5-to-pdf'.
                 //createHTMLFile( htmlText );
                 // PDF Datei schreiben mit 'html5-to-pdf'.

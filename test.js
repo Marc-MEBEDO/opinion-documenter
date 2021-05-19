@@ -14,10 +14,12 @@ async function main() {
     });
     //console.log( opinionDetails );
     //console.log( JSON.stringify( opinionDetails ) );
+
+    const images = [];
     
     let path = require( 'path' );
     try {
-        await gutachten.pdfCreate( opinion , opinionDetails , detailsTodoList , path.join( __dirname , 'result' ) );///**/ , 1 , 1 , 0 , 0 );///**/= nur für Tests
+        await gutachten.pdfCreate( opinion , opinionDetails , detailsTodoList , images , path.join( __dirname , 'result' ) );///**/ , 1 , 1 , 0 , 0 );///**/= nur für Tests
         console.log( 'done' );
     }    
     catch( err ) {
