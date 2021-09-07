@@ -58,8 +58,8 @@ const createPDFFile_html5_to_pdf = async ( iPathFile , iHTMLText ) => {
                         </table>
                     </div>`,
                 margin: {
-                    top: '30mm',
-                    bottom: '16mm',
+                    top: '35mm',
+                    bottom: '23mm',
                     right: '0mm',
                     left: '0mm',
                 },

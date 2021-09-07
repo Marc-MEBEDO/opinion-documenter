@@ -209,6 +209,7 @@ ul.part {
 }
 
 .mbac-item-type-answer {
+    padding-bottom: 1.5em;
     border-bottom: 1px solid;
 }
 
@@ -367,12 +368,15 @@ table.mbac-item-type-picture-container > thead {
 
 table.mbac-item-type-picture-container > thead td {
     padding: 4px;
+    text-align: center;
 }
 
 table.mbac-item-type-picture-container td {
     border: 1px solid black;
     border-collapse: collapse;
     padding: 4px;
+    text-align: left;
+    vertical-align: top;
 }
 
 table.mbac-item-type-picture-container tr td:nth-child(1) {
