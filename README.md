@@ -64,6 +64,8 @@ Folgende internen Variablen werden verwendet bzw. können im Dokument verwendet 
 * ${Gutachtennummer} - aus opinion
 * ${GutachterName1} - aus opinion
 * ${GutachterName2} - aus opinion
+* ${GutachterName1Full} - zusammengesetzt aus opinion und Profildaten (ab Version 1.0.33)
+* ${GutachterName2Full} - zusammengesetzt aus opinion und Profildaten (ab Version 1.0.33)
 
 #### Zusätzliche Variablen
 Folgende Variablen können vom Anwender genutzt werden zum Überschreiben der default-Werte:
