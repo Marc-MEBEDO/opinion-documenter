@@ -386,7 +386,7 @@ table.mbac-item-type-picture-container td p:nth-child(1) {
 }
 
 table.mbac-item-type-picture-container tr td:nth-child(1) {
-    width: 0.7cm;
+    width: 0.9cm;
 }
 
 table.mbac-item-type-picture-container tr td:nth-child(2) {
@@ -469,6 +469,10 @@ table.table-bordered td {
     padding: 4px;
     border-collapse: collapse;
     border: 1px solid black;
+}
+
+table td {
+    vertical-align: top;
 }
 
 .mbac-text {
