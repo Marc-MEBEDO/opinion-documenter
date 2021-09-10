@@ -1,6 +1,7 @@
 body {
     font-family: Arial;
     font-size: 11pt;
+    word-break: break-word;
 }
 
 /*h1, h2, h3, h4 {
@@ -379,6 +380,11 @@ table.mbac-item-type-picture-container td {
     vertical-align: top;
 }
 
+/*Beim ersten <p></p> bei einem Bildtext keinen Abstand setzen.*/
+table.mbac-item-type-picture-container td p:nth-child(1) {
+    margin: 0;
+}
+
 table.mbac-item-type-picture-container tr td:nth-child(1) {
     width: 0.7cm;
 }
@@ -468,6 +474,11 @@ table.table-bordered td {
 .mbac-text {
     font-weight: normal;
     padding-bottom: 1em;
+}
+
+img {
+    max-width: 675px;
+    height: auto !important;
 }
 
 .mbac-position.mbac-media-screen {

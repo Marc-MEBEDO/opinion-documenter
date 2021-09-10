@@ -689,6 +689,10 @@ const ReplaceInternalVariables = ( htmlText , opinion ) => {
     htmlText = htmlText.replace( /\$\{GutachterName1\}/g , GetExpert( opinion.expert1 , false ) );
     // ${GutachterName2}
     htmlText = htmlText.replace( /\$\{GutachterName2\}/g , GetExpert( opinion.expert2 , false ) );
+    // ${GutachterName1Full}
+    htmlText = htmlText.replace( /\$\{GutachterName1Full\}/g , GetExpert( opinion.expert1 ) );
+    // ${GutachterName2Full}
+    htmlText = htmlText.replace( /\$\{GutachterName2Full\}/g , GetExpert( opinion.expert2 ) );
 
     return htmlText;
 }
