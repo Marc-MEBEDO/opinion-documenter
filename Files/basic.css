@@ -26,6 +26,11 @@ p.normal {
     page-break-after: always;
 }
 
+.mbac-item-type-question .page-breaks {
+    page-break-before: always;
+    page-break-after: avoid;
+}
+
 .page-noBreak {
     page-break-before: avoid;
     page-break-after: avoid;
