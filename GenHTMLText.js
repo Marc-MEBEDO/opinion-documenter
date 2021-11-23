@@ -349,7 +349,7 @@ const GetTodoItems = ( detailsTodoList , /*chapter ,*/ questionChapters ) => {
         });
         if ( chap )
             chapterNo = chap.chapter;
-        text += `<td>${item.actionText} (<a href="#${item._id}">${chapterNo}</a>)</td>`;
+        text += `<td class="todo-item">${item.actionText} (<a href="#${item._id}">siehe ${chapterNo}</a>)</td>`;
         text += '</tr>';
     });
     return text;
@@ -374,7 +374,8 @@ const GetChildren = ( opDetails , detailsTodoList , images , parentID , chapter 
         if ( currentDetailValue.type == 'PAGEBREAK' ) {
             if ( !currentDetailValue.deleted
               && !currentDetailValue.finallyRemoved )
-                text += '<div class="page-breaks" />';
+                text += '<div class="page-breaks"></div>';
+                //text += '<div class="page-breaks" />';
         }
         else {
             const canHaveChildren = CanHaveChildren( currentDetailValue );
@@ -575,7 +576,8 @@ const GetDynContent = ( opinionDetails , detailsTodoList , images , hasAbbreviat
         if ( currentDetail.type == 'PAGEBREAK' ) {
             if ( !currentDetail.deleted
               && !currentDetail.finallyRemoved )
-                text += '<div class="page-breaks" />';
+                text += '<div class="page-breaks"></div>';
+                //text += '<div class="page-breaks" />';
         }
         else {
             const canHaveChildren = CanHaveChildren( currentDetail );
