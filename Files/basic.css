@@ -275,7 +275,8 @@ ul.part {
 
 .mbac-item-type-question .mbac-handlungsempfehlung.kurz > .mbac-action-longtext {
     /*color: orange;*/
-    background-color: orange;
+    /*background-color: orange;*/
+    background-color: rgb(255, 203, 21);
 }
 
 .mbac-item-type-question .mbac-handlungsempfehlung.mittel > .mbac-action-longtext {
