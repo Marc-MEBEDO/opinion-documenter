@@ -224,8 +224,9 @@ ul.part {
 }
 
 .mbac-item-type-answer {
-    padding-bottom: 1.5em;
-    border-bottom: 1px solid;
+    /*padding-bottom: 0.5em;
+    border-bottom: 1px solid;*/
+    /*break-inside: avoid;*/
 }
 
 .mbac-item-type-answer > .mbac-title {
@@ -253,6 +254,9 @@ ul.part {
     padding-left: 1.5em;
     padding-right: 1em;
     margin-bottom: 0.5em;
+    border-bottom: 1px solid;
+    padding-bottom: 1em;
+    break-inside: avoid;
 }
 
 .mbac-item-type-question .mbac-action-text {
@@ -260,7 +264,6 @@ ul.part {
 }
 
 .mbac-item-type-question .mbac-handlungsempfehlung .mbac-action-longtext {
-    padding-bottom: 1em;
     margin-top: 0.5em;
 
     padding: 4px;
