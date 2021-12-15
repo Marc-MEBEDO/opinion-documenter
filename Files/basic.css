@@ -256,7 +256,7 @@ ul.part {
     margin-bottom: 0.5em;
     border-bottom: 1px solid;
     padding-bottom: 1em;
-    break-inside: avoid;
+    /*break-inside: avoid;*/
 }
 
 .mbac-item-type-question .mbac-action-text {
