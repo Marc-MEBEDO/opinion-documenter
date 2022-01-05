@@ -50,9 +50,9 @@ Paramteter 6-9 sind optional und beinhalten:
 8. print: default: false - Bool, der angibt, ob PDF für Ausdruck (=true) gedacht ist oder nicht (=false).
 Wenn print == false (also rein für digitale Betrachtung), dann werden im Inhaltsverzeichnis Links eingefügt.
 Bei print == true keine Links.
-Nur relevant, wenn hasToC == true.
+Nur relevant, wenn hasToC == true
 9. ToCPageNos: default: true - Bool, der angibt, ob im Inhaltsverzeichnis Seitenzahlen angegeben werden sollen.
-Nur relevant, wenn hasToC == true.
+Nur relevant, wenn hasToC == true
 
 ### Variablen
 
