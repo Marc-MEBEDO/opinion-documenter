@@ -135,6 +135,12 @@ ul.part {
     padding-left: 224px;
 }
 
+/* Links im Inhaltsverzeichnis werden schwarz und ohne Unterstrich dargestellt */
+.toc_Point a {
+    text-decoration: none;
+    color: black;
+}
+
 .dots::before {
     display: block;
     white-space: nowrap;
