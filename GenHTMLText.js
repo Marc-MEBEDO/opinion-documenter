@@ -96,14 +96,20 @@ const GetSecondPage = ( opinion ) => {
     const useMomentFormat = true;// Wird hier fest gesetzt.
     if ( useMomentFormat ) {
         const moment = require( 'moment' );
-        pagedata = pagedata
-        .replace( /\{\{PRJ_Datum_Start\}\}/ , moment( opinion.dateFrom ).format( 'DD.MM.YYYY' ) )
-        .replace( /\{\{PRJ_DATUM_PLAN\}\}/  , moment( opinion.dateTill ).format( 'DD.MM.YYYY' ) );
+        pagedata = pagedata.replace( /\{\{PRJ_Datum_Start\}\}/ , moment( opinion.dateFrom ).format( 'DD.MM.YYYY' ) );
+        // Enddatum wird nur angegeben, wenn es sich von Startdatum unterscheidet.
+        if ( moment( opinion.dateFrom ).format( 'DD.MM.YYYY' ) == moment( opinion.dateTill ).format( 'DD.MM.YYYY' ) )
+            pagedata = pagedata.replace( /\{\{PRJ_DATUM_PLAN\}\}/  , '' );
+        else
+            pagedata = pagedata.replace( /\{\{PRJ_DATUM_PLAN\}\}/  , ` - ${moment( opinion.dateTill ).format( 'DD.MM.YYYY' )}` );
     }
     else {
-        pagedata = pagedata
-        .replace( /\{\{PRJ_Datum_Start\}\}/ , opinion.dateFrom.toLocaleDateString( 'de-DE' ) )
-        .replace( /\{\{PRJ_DATUM_PLAN\}\}/  , opinion.dateTill.toLocaleDateString( 'de-DE' ) );
+        pagedata = pagedata.replace( /\{\{PRJ_Datum_Start\}\}/ , opinion.dateFrom.toLocaleDateString( 'de-DE' ) );
+        // Enddatum wird nur angegeben, wenn es sich von Startdatum unterscheidet.
+        if ( opinion.dateFrom.toLocaleDateString( 'de-DE' ) == opinion.dateTill.toLocaleDateString( 'de-DE' ) )
+            pagedata = pagedata.replace( /\{\{PRJ_DATUM_PLAN\}\}/  , '' );
+        else
+            pagedata = pagedata.replace( /\{\{PRJ_DATUM_PLAN\}\}/  , ` - ${opinion.dateTill.toLocaleDateString( 'de-DE' )}` );
     }
     
     // Teilnehmer.

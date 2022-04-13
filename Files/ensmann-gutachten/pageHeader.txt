@@ -1,0 +1,9 @@
+<div id="header-template" style="position:absolute; top:7mm;">
+	<table width = 550mm>
+		<tr>
+			<td style="width: 50%; "></td>
+			<td style="width: 10%;">${header_image}</td>
+			<td style="width: 40%;"></td>
+		</tr>
+	</table>
+</div>

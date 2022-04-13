@@ -1,0 +1,9 @@
+<div id="footer-template" style="position:absolute; height:16mm; top:215mm; left:0mm; right:0mm; font-family:Arial; font-size:10px; padding-left:1px; background-color:rgb(245,155,19); -webkit-print-color-adjust: exact">
+	<table style="position:absolute; width:65%; height:7mm; left:9mm;">
+		<tr>
+			<td style="text-align: left;width: 33%;"><b>© MEBEDO Consulting GmbH</b></td>
+			<td style="text-align: center;width: 33%;">Seite <span class="pageNumber"></span> von <span class="totalPages"></span></td>
+			<td style="text-align: right;width: 33%;">${dateStr}</td>
+		</tr>
+	</table>
+</div>

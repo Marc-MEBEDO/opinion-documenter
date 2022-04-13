@@ -10,53 +10,78 @@ const fs = require( 'fs' );
     });
 }*/
 
-const createPDFFile_html5_to_pdf = async ( iPathFile , iHTMLText ) => {
-    // Benötigte Dateien lesen.
+const getHeader = async ( iFullTemplatePath ) => {
     const path = require( 'path' );
-    const pathFile = path.join( __dirname , 'Files' , 'header_image.html' );
-    const header_image = fs.readFileSync( pathFile , 'utf-8' );    
-    // Aktuelles Datum für Footer.
-    const dateStr = helper.GetTodayDateString();
+    let pathFile = path.join( iFullTemplatePath , 'header_image.html' );
+    let header_image = fs.readFileSync( pathFile , 'utf-8' ); 
+    pathFile = path.join( iFullTemplatePath , 'pageHeader.txt' );
+    let headerText = fs.readFileSync( pathFile , 'utf-8' );
+    headerText = headerText.replace( /\$\{header_image\}/g , header_image );
+    return headerText;
+}
 
+const getFooter = async ( iFullTemplatePath ) => {
+    const path = require( 'path' );
+    const dateStr = helper.GetTodayDateString();
+    let pathFile = path.join( iFullTemplatePath , 'pageFooter.txt' );
+    let footerText = fs.readFileSync( pathFile , 'utf-8' );
+    footerText = footerText.replace( /\$\{dateStr\}/g , dateStr );
+    return footerText;
+}
+
+const pathExists = async ( iPath ) => {
+    return new Promise( async ( resolve , reject ) => {
+        try {
+            fs.access( iPath , fs.constants.F_OK, (err) => {
+                if ( err )
+                    resolve( false );
+                else
+                    resolve( true );
+            });    
+            
+        }
+        catch( err ) {
+            reject( err );
+        }
+    });
+}
+
+const createPDFFile_html5_to_pdf = async ( iOpinion , iPathFile , iHTMLText ) => {
+    // Benötigte Dateien lesen.
+    const path = require( 'path' );    
     // PDF Datei schreiben mit 'html5-to-pdf'.
     const _HTML5ToPDF = require( 'html5-to-pdf' ); 
 
+    // Um welches Ausgabeformat handelt es sich.
+    const _defaultTemplatePathPart = 'mebedo-gutachten';
+    let pathPart = _defaultTemplatePathPart;
+    if ( !helper.EmptyString( iOpinion.outputTemplate ) )
+        pathPart = iOpinion.outputTemplate;
+    let fullTemplatePath = path.join( __dirname , 'Files' , pathPart );
+
     return new Promise( async ( resolve , reject ) => {
+        if ( !await pathExists( fullTemplatePath ) )
+            fullTemplatePath = path.join( __dirname , 'Files' , _defaultTemplatePathPart );
+        const header = await getHeader( fullTemplatePath );
+        const footer = await getFooter( fullTemplatePath );
+
         const html5ToPDF = new _HTML5ToPDF({
             inputBody: iHTMLText,
             //outputPath: iPathFile,
-            templatePath: path.join( __dirname , 'Files' ),
+            templatePath: fullTemplatePath,//path.join( __dirname , 'Files' ),
             include: [
-                path.join( __dirname , 'Files' , 'basic.css' ),
-                path.join( __dirname , 'Files' , 'custom-margin.css' ),
+                //path.join( __dirname , 'Files' , 'ENSMANN' , 'basic.css' ),
+                path.join( fullTemplatePath , 'basic.css' ),
+                path.join( fullTemplatePath , 'custom-margin.css' ),
             ],
             pdf: {
                 displayHeaderFooter: true,
                 format: 'A4',
                 printBackground: true,
                 headerTemplate:
-                    //`<div id="header-template">
-                    //`<div id="header-template" style="position:absolute; top:6mm;">
-                        //<table style="width = 550mm">
-                    `<div id="header-template" style="position:absolute; top:7mm;">
-                        <table width = 550mm>
-                            <tr>
-                                <td style="width: 80%;"></td>
-                                <td style="width: 20%;">${header_image}</td>
-                            </tr>
-                        </table>
-                    </div>`,
-                    //<td style="width: 20%;"><img style="width: 180px;" src="file:/C:/Users/marc.tomaschoff/meteor/html-create/Files/MEBEDO_LOGO_PRINT_CMYK.jpg" alt="Page Header"></td>
+                    header,
                 footerTemplate:
-                    `<div id="footer-template" style="position:absolute; height:16mm; top:215mm; left:0mm; right:0mm; font-family:Arial; font-size:10px; padding-left:1px; background-color:rgb(245,155,19); -webkit-print-color-adjust: exact">
-                        <table style="position:absolute; width:65%; height:7mm; left:9mm;">
-                            <tr>
-                                <td style="text-align: left;width: 33%;"><b>© MEBEDO Consulting GmbH</b></td>
-                                <td style="text-align: center;width: 33%;">Seite <span class="pageNumber"></span> von <span class="totalPages"></span></td>
-                                <td style="text-align: right;width: 33%;">${dateStr}</td>
-                            </tr>
-                        </table>
-                    </div>`,
+                    footer,
                 margin: {
                     top: '35mm',
                     bottom: '23mm',
@@ -193,14 +218,15 @@ const pdfCreate = async ( opinion , opinionDetails , detailsTodoList , images , 
         if ( hasToC && ToCPageNos ) {
             // Mit Inhaltverzeichnis und Seitenzahlen.
             try {
+                //console.log( '1' );
                 htmlText = genHTMLText.generateHTMLText( opinion , opinionDetails , detailsTodoList , images , hasAbbreviationsPage , hasToC , print , ToCPageNos , headingsArray , true );
+
                 // HTML Datei schreiben für 'html5-to-pdf'.
                 //createHTMLFile( htmlText );
-
                 // Dafür muss PDF temporär geschrieben, eingelesen und dann final mit den zuvor ermittelten Seitenzahlen neu geschrieben werden.
                 const tmpPathFile = helper.GetPDFPathFile( path , opinion._id , true );
                 // PDF temporär schreiben.
-                await createPDFFile_html5_to_pdf( tmpPathFile , htmlText );
+                await createPDFFile_html5_to_pdf( opinion , tmpPathFile , htmlText );
                 // PDF lesen und Seitenzahlen ermitteln.
                 let result = await readPDF_parse( tmpPathFile );
                 // Temporäre Datei löschen, wenn diese existiert.
@@ -210,7 +236,6 @@ const pdfCreate = async ( opinion , opinionDetails , detailsTodoList , images , 
                             throw err;
                     });
                 }
-
                 SetPages( headingsArray , result );
                 ModifyArray( headingsArray );
                 // HTML Text neu generieren mit Seitenzahlen.
@@ -218,7 +243,7 @@ const pdfCreate = async ( opinion , opinionDetails , detailsTodoList , images , 
                 // HTML Datei final schreiben für 'html5-to-pdf'.
                 //createHTMLFile( htmlText );
                 // PDF Datei final schreiben mit 'html5-to-pdf'.
-                await createPDFFile_html5_to_pdf( pathFile , htmlText );
+                await createPDFFile_html5_to_pdf( opinion , pathFile , htmlText );
                 return pathFile;
             }
             catch( err ) {
@@ -231,7 +256,7 @@ const pdfCreate = async ( opinion , opinionDetails , detailsTodoList , images , 
                 // HTML Datei schreiben für 'html5-to-pdf'.
                 //createHTMLFile( htmlText );
                 // PDF Datei schreiben mit 'html5-to-pdf'.
-                await createPDFFile_html5_to_pdf( pathFile , htmlText );
+                await createPDFFile_html5_to_pdf( opinion , pathFile , htmlText );
                 return pathFile;
             }
             catch( err ) {

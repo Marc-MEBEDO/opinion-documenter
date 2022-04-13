@@ -45,7 +45,8 @@ p.normal {
     page-break-after: avoid;
 }
 
-h2.ueb2 {
+h2.ueb2,
+h2.ueb2_abbr {
 	font-size: 14pt;
 }
 
