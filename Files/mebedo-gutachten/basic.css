@@ -496,6 +496,14 @@ table.table-bordered td {
     border: 1px solid black;
 }
 
+table.table-bordered.docs tr td:nth-child(1) {
+    width: 1.3cm;
+}
+
+table.table-bordered.docs tr td:nth-child(2) {
+    width: 16.7cm;
+}
+
 table td {
     vertical-align: top;
 }
