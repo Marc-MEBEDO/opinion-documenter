@@ -573,6 +573,8 @@ const GetDynContent = ( opinionDetails , detailsTodoList , images , hasAbbreviat
     // Abkürzungsverzeichnis.
     if ( hasAbbreviationsPage )
         text += GetAbbreviationsPage();
+    else
+        text += '<div class="page-breaks"></div>';
 
     // 2. Durchgang für Inhalt: Einzelne Kapitel.
     chapterNo = 1;
