@@ -82,4 +82,4 @@ Folgende Variablen können vom Anwender genutzt werden zum Überschreiben der de
 
 ### Bildcontainer, Überschrift der Tabelle ausblenden
 
-Ist der Text "[noHeader]" irgendwo im Untertext des Bildcontainers enthalten, wird die Überschrift der Tabelle in der Ausgabe nicht angezeigt.
+Ist der Text \"[noHeader]\" irgendwo im Untertext des Bildcontainers enthalten, wird die Überschrift der Tabelle in der Ausgabe nicht angezeigt.
