@@ -1,6 +1,6 @@
 {
   "name": "opinion-documenter",
-  "version": "1.0.47",
+  "version": "1.0.48",
   "description": "html pdf creater",
   "main": "index.js",
   "dependencies": {
