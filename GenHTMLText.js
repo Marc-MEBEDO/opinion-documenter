@@ -396,8 +396,15 @@ const GetChildren = ( opDetails , detailsTodoList , images , parentID , chapter 
                 .replace( /\{\{printPosition\}\}/ , `${questSubChapterNo}` );
                 if ( tmp && !helper.EmptyString( currentDetailValue.printTitle ) )
                     htmlContent = htmlContent.replace( new RegExp( helper.escapeRegExp( currentDetailValue.printTitle ) ) , currentDetailValue._id );
-                if ( currentDetailValue.type == 'PICTURECONTAINER' )
+                if ( currentDetailValue.type == 'PICTURECONTAINER' ) {
+                    //console.log( htmlContent );
                     htmlContent = htmlContent.replace( /#/ , 'Nr.' );
+                    if ( htmlContent.indexOf( '[noHeader]' ) > -1 ) {
+                        htmlContent = htmlContent.replace( '[noHeader]' , '' );
+                        htmlContent = htmlContent.replace( /<table class="mbac-item-type-picture-container">/ , '<table class="mbac-item-type-picture-container noHeader">' );
+                    }
+                    //console.log( htmlContent );
+                }
                 if ( currentDetailValue.type == 'PICTURE' ) {
                     htmlContent = htmlContent
                     .replace( /\{\{index\}\}/ , `${GetMainChapterNo( chapter )}.${index + 1}` )
@@ -600,8 +607,15 @@ const GetDynContent = ( opinionDetails , detailsTodoList , images , hasAbbreviat
                 .replace( /\{\{printPosition\}\}/ , `${chapterNo}.` );
                 if ( tmp && !helper.EmptyString( currentDetail.printTitle ) )
                     htmlContent = htmlContent.replace( new RegExp( helper.escapeRegExp( currentDetail.printTitle ) ) , currentDetail._id );
-                if ( currentDetail.type == 'PICTURECONTAINER' )
+                if ( currentDetail.type == 'PICTURECONTAINER' ) {
+                    //console.log( htmlContent );
                     htmlContent = htmlContent.replace( /#/ , 'Nr.' );
+                    if ( htmlContent.indexOf( '[noHeader]' ) > -1 ) {
+                        htmlContent = htmlContent.replace( '[noHeader]' , '' );
+                        htmlContent = htmlContent.replace( /<table class="mbac-item-type-picture-container">/ , '<table class="mbac-item-type-picture-container noHeader">' );
+                    }
+                    //console.log( htmlContent );
+                }
                 if ( currentDetail.type == 'PICTURE' ) {
                     htmlContent = htmlContent
                     .replace( /\{\{index\}\}/ , `${chapterNo}.${index + 1}` )

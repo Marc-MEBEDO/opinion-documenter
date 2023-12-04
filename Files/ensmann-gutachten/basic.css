@@ -402,6 +402,10 @@ table.mbac-item-type-picture-container > thead td {
     text-align: center;
 }
 
+.mbac-item-type-picture-container.noHeader > thead td {
+    display: none;
+}
+
 table.mbac-item-type-picture-container td {
     border: 1px solid black;
     border-collapse: collapse;
@@ -416,7 +420,7 @@ table.mbac-item-type-picture-container td p:nth-child(1) {
 }
 
 table.mbac-item-type-picture-container tr td:nth-child(1) {
-    width: 0.9cm;
+    width: 1cm;
 }
 
 table.mbac-item-type-picture-container tr td:nth-child(2) {

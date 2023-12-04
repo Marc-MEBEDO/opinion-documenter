@@ -79,3 +79,7 @@ Folgende Variablen können vom Anwender genutzt werden zum Überschreiben der de
 
 ##### Für die 2. Seite des Dokuments für den Namen des Ansprechpartners des Auftraggebers
 * {{!AuftraggeberName}} - default: ''
+
+### Bildcontainer, Überschrift der Tabelle ausblenden
+
+Ist der Text "[noHeader]" irgendwo im Untertext des Bildcontainers enthalten, wird die Überschrift der Tabelle in der Ausgabe nicht angezeigt.
