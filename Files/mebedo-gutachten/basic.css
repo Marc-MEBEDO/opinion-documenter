@@ -494,6 +494,10 @@ table.table-bordered tr:nth-child(1) {
     background-color: #F2F2F2;
 }
 
+table.table-bordered td:nth-child(1) {
+    width: 1.3cm;
+}
+
 table.table-bordered td {
     padding: 4px;
     border-collapse: collapse;
