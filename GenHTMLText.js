@@ -672,8 +672,11 @@ const ReplaceOpinionVariables = ( htmlText , opinion ) => {
     if ( opinion.userVariables
       && opinion.userVariables.length > 0 ) {
         opinion.userVariables.forEach( element => {
+            let val = element.value;
+            if ( helper.EmptyString( val ) )
+                val = ' '
             htmlText = htmlText
-            .replace( new RegExp( '\{\{' + helper.escapeRegExp( element.name ) + '\}\}' , 'g' ) , element.value );
+            .replace( new RegExp( '\{\{' + helper.escapeRegExp( element.name ) + '\}\}' , 'g' ) , val );
         });
     }
 
@@ -685,6 +688,7 @@ const ReplaceOpinionVariables = ( htmlText , opinion ) => {
     const docAdditionalText1 = 'Schwerpunkt ist der Aufbau einer rechtssicheren';
     const docAdditionalText2 = 'Organisationsstruktur im Bereich der Elektrotechnik';
     const doclocationLongText = '';
+    const docParticipant = 'Teilnehmer';
 
     htmlText = htmlText
     .replace( /\{\{!Titel\}\}/ , docTitle )
@@ -693,9 +697,10 @@ const ReplaceOpinionVariables = ( htmlText , opinion ) => {
     .replace( /\{\{!ZusatztextZeile2\}\}/ , docAdditionalText2 )
     .replace( /\{\{!StandortLangtext\}\}/ , doclocationLongText );
 
-    // Name des Auftraggebers auf Seite 2.
+    // Name des Auftraggebers und Teilnehmer auf Seite 2.
     htmlText = htmlText
-    .replace( /\{\{!AuftraggeberName\}\}/ , '' );//'opinion.customer.contact_person' );
+    .replace( /\{\{!AuftraggeberName\}\}/ , '' )//'opinion.customer.contact_person' );
+    .replace( /\{\{!Teilnehmer\}\}/ , docParticipant );
     //-----
 
     return htmlText;
