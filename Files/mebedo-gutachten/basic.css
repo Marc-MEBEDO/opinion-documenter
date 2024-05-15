@@ -207,6 +207,7 @@ ul.part {
     padding-top: 1em;
     padding-left: 1em;
     padding-right: 1em;
+    break-inside: avoid;/*Kein Umbruch innerhalb der eigentlichen Frage*/
 }
 
 .mbac-item-type-question > .mbac-text {
