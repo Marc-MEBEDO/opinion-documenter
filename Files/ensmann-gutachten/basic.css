@@ -204,6 +204,7 @@ ul.part {
     box-decoration-break: clone;
     display: inline-block;*/
     padding-bottom: 1em;
+    break-inside: avoid;/*Kein Umbruch innerhalb des Fragenblocks*/
 }
 
 .mbac-item-type-question > .mbac-title {
