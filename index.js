@@ -50,7 +50,7 @@ const createPDFFile_html5_to_pdf = async ( iOpinion , iPathFile , iHTMLText ) =>
     // Benötigte Dateien lesen.
     const path = require( 'path' );    
     // PDF Datei schreiben mit 'html5-to-pdf'.
-    const _HTML5ToPDF = require( 'html5-to-pdf' ); 
+    const _HTML5ToPDF = require( 'html5-to-pdf_mt' ); 
 
     // Um welches Ausgabeformat handelt es sich.
     const _defaultTemplatePathPart = 'mebedo-gutachten';

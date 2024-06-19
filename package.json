@@ -4,7 +4,7 @@
   "description": "html pdf creater",
   "main": "index.js",
   "dependencies": {
-    "html5-to-pdf": "^4.0.1",
+    "html5-to-pdf_mt": "^4.0.3",
     "moment": "^2.30.1",
     "pdf-parse": "^1.1.1"
   },
