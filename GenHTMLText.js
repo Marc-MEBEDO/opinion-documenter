@@ -391,9 +391,12 @@ const GetChildren = ( opDetails , detailsTodoList , images , parentID , chapter 
             if ( !helper.EmptyString( currentDetailValue.htmlContent ) ) {
                 htmlContent = currentDetailValue.htmlContent
                 .replace( /\{\{XparentPosition\}\}/ , `${chapter}.` )
-                .replace( /\{\{printParentPosition\}\}/ , `${chapter}.` )
                 .replace( /\{\{Xposition\}\}/ , `${subChapterNo}` )
                 .replace( /\{\{printPosition\}\}/ , `${questSubChapterNo}` );
+                if ( currentDetailValue.type == 'QUESTION' && currentDetailValue.depth >= 4 )
+                    htmlContent = htmlContent.replace( /\{\{printParentPosition\}\}/ , currentDetailValue.parentPosition )
+                else
+                    htmlContent = htmlContent.replace( /\{\{printParentPosition\}\}/ , `${chapter}.` )
                 if ( tmp && !helper.EmptyString( currentDetailValue.printTitle ) )
                     htmlContent = htmlContent.replace( new RegExp( helper.escapeRegExp( currentDetailValue.printTitle ) ) , currentDetailValue._id );
                 if ( currentDetailValue.type == 'PICTURECONTAINER' ) {
@@ -423,11 +426,20 @@ const GetChildren = ( opDetails , detailsTodoList , images , parentID , chapter 
 
                 if ( currentDetailValue.type == 'QUESTION' ) {
                     // Speicherung der Kapitelnummern der Fragen für die Todo-List:
-                    questionChapters.push(
-                        {
-                            _id: currentDetailValue._id,
-                            chapter: `${chapter}.${questSubChapterNo}`
-                        });
+                    if ( currentDetailValue.depth < 4 ) {
+                        questionChapters.push(
+                            {
+                                _id: currentDetailValue._id,
+                                chapter: `${chapter}.${questSubChapterNo}`
+                            });
+                    }
+                    else {
+                        questionChapters.push(
+                            {
+                                _id: currentDetailValue._id,
+                                chapter: `${currentDetailValue.parentPosition}${questSubChapterNo}`
+                            });
+                    }
                     questSubChapterNo += 1;
                 }
             }
